@@ -1,0 +1,17 @@
+<form>
+  <div>
+    <label>
+      Email
+      <input type="email" />
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Password
+      <input type="password" />
+    </label>
+  </div>
+
+<button type="submit" (submit)="login()" [disabled]="loginForm().invalid()">Log in</button>
+</form>
