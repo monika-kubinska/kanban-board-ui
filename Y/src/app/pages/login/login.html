@@ -1,56 +1,64 @@
-@if (!showRegisterForm)
-{
-<form (ngSubmit)="onSubmit($event)">
-  <div>
-    <label>
-      Email
-      <input type="email" [formField]="loginForm.email" />
-    </label>
-    @if (loginForm.email().invalid() && loginForm.email().touched()) {
-      <div class="error">
-        @for (error of loginForm.email().errors(); track error.kind) {
-          <span>{{ error.message }}</span>
-        }
-      </div>
-    }
-  </div>
+<div>
+  <strong>{{ authStatusMessage() }}</strong>
+</div>
 
-  <div>
-    <label>
-      Password
-      <input type="password" [formField]="loginForm.password" />
-    </label>
-    @if (loginForm.password().invalid() && loginForm.password().touched()) {
-      <div class="error">
-        @for (error of loginForm.password().errors(); track error.kind) {
-          <span>{{ error.message }}</span>
-        }
-      </div>
-    }
-  </div>
-
-<button type="button" (click)="login()" [disabled]="loginForm().invalid()">Log in</button>
-</form>
-
-  <div>
-    <label>
-      Don't have an account? Register here
-      <button type="button" (click)="onRegisterClick()">Register</button>
-    </label>
-  </div>
-@if (isFormValid()) {
+@if (isAuthenticated()) {
   <div class="valid">
-    <span>✓ Form is valid</span>
+    <span>Masz aktywną sesję. Możesz korzystać z aplikacji.</span>
   </div>
-}
+} @else {
+  @if (!showRegisterForm) {
+    <form (ngSubmit)="onSubmit($event)">
+      <div>
+        <label>
+          Email
+          <input type="email" [formField]="loginForm.email" />
+        </label>
+        @if (loginForm.email().invalid() && loginForm.email().touched()) {
+          <div class="error">
+            @for (error of loginForm.email().errors(); track error.kind) {
+              <span>{{ error.message }}</span>
+            }
+          </div>
+        }
+      </div>
 
-@if (error) {
-  <div class="error">
-    <span>{{ error }}</span>
-  </div>
-}
-}
-@else 
-{
-<app-register (registerSuccess)="showRegisterForm = false"></app-register>
+      <div>
+        <label>
+          Password
+          <input type="password" [formField]="loginForm.password" />
+        </label>
+        @if (loginForm.password().invalid() && loginForm.password().touched()) {
+          <div class="error">
+            @for (error of loginForm.password().errors(); track error.kind) {
+              <span>{{ error.message }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <button type="button" (click)="login()" [disabled]="loginForm().invalid()">Log in</button>
+    </form>
+
+    <div>
+      <label>
+        Don't have an account? Register here
+        <button type="button" (click)="onRegisterClick()">Register</button>
+      </label>
+    </div>
+
+    @if (isFormValid()) {
+      <div class="valid">
+        <span>✓ Form is valid</span>
+      </div>
+    }
+
+    @if (error) {
+      <div class="error">
+        <span>{{ error }}</span>
+      </div>
+    }
+  } @else {
+    <app-register (registerSuccess)="showRegisterForm = false"></app-register>
+  }
 }

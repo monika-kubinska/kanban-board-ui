@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { AuthService } from '../../core/auth/auth.service';
 import { Login } from './login';
 
 describe('Login', () => {
@@ -18,5 +19,15 @@ describe('Login', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should report whether the user is authenticated', () => {
+    const authService = TestBed.inject(AuthService);
+
+    expect(component.isAuthenticated()).toBeFalsy();
+
+    authService.setToken('sample-token');
+
+    expect(component.isAuthenticated()).toBeTruthy();
   });
 });

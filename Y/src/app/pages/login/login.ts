@@ -1,9 +1,10 @@
-import {Component, inject, Input, signal, computed} from '@angular/core';
-import { email, form, FormField, required, submit} from '@angular/forms/signals';
-import { LoginInput } from '../../api/data-contracts';
-import { HttpClient } from '@angular/common/http';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { email, form, FormField, required, submit } from '@angular/forms/signals';
+import { LoginInput } from '../../api/data-contracts';
+import { AuthService } from '../../core/auth/auth.service';
 import { Register } from '../register/register';
 
 @Component({
@@ -12,14 +13,19 @@ import { Register } from '../register/register';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login 
-{
+export class Login {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   loading = false;
   showRegisterForm = false;
   error = '';
+
+  readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+  readonly authStatusMessage = computed(() =>
+    this.isAuthenticated() ? 'Jesteś zalogowany' : 'Nie jesteś zalogowany'
+  );
 
   loginModel = signal<LoginInput>({
     email: '',
@@ -35,7 +41,7 @@ export class Login
   isFormValid = computed(() => !this.loginForm().invalid());
 
   login(): void {
-    console.log('Login form submitted:', this.loginForm()); 
+    console.log('Login form submitted:', this.loginForm());
     if (this.loginForm().invalid()) {
       this.loginForm().markAsTouched();
       return;
@@ -46,17 +52,21 @@ export class Login
     this.loading = true;
     this.error = '';
 
-    this.http.post<LoginInput>('http://localhost:5258/api/auth/login', this.loginModel())
-    .subscribe({
-      next: (response) => {
-        console.log('Zalogowano', response);
-        this.loading = false;
-      },
-      error: () => {
-        this.error = 'Nieprawidłowy login lub hasło';
-        this.loading = false;
-      }
-    });
+    this.http
+      .post<{ token?: string; accessToken?: string }>('http://localhost:5258/api/auth/login', this.loginModel())
+      .subscribe({
+        next: (response) => {
+          const token = response.token ?? response.accessToken ?? null;
+          this.authService.setToken(token);
+          console.log('Zalogowano', response);
+          this.loading = false;
+        },
+        error: () => {
+          this.authService.removeToken();
+          this.error = 'Nieprawidłowy login lub hasło';
+          this.loading = false;
+        },
+      });
   }
 
   onRegisterClick() {
@@ -64,13 +74,12 @@ export class Login
   }
 
   onSubmit(event: Event) {
-      console.log('Form submitted:', this.loginForm());
+    console.log('Form submitted:', this.loginForm());
 
-  event.preventDefault();
-  submit(this.loginForm, async () => {
-    const credentials = this.loginModel();
-    console.log('Logging in with:', credentials);
-    // Add your login logic here
-  });
-}
+    event.preventDefault();
+    submit(this.loginForm, async () => {
+      const credentials = this.loginModel();
+      console.log('Logging in with:', credentials);
+    });
+  }
 }
