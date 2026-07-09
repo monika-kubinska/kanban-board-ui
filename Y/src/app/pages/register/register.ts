@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { form, required, email, submit, FormField } from '@angular/forms/signals';
 import { RegisterInput } from '../../api/data-contracts';
 import { CommonModule } from '@angular/common';
+import { apiURL } from '../../api/config';
 
 @Component({
   selector: 'app-register',
@@ -28,10 +29,10 @@ export class Register {
   );
 
   registerForm = form(this.registerModel, (fieldPath) => {
-    required(fieldPath.email, { message: 'Email is required' });
-    email(fieldPath.email, { message: 'Invalid email format' });
-    required(fieldPath.password, { message: 'Password is required' });
-    required(fieldPath.name, { message: 'Name is required' });
+    required(fieldPath.email, { message: 'Pole e-mail jest wymagane' });
+    email(fieldPath.email, { message: 'Nieprawidłowy format e-mail' });
+    required(fieldPath.password, { message: 'Pole hasło jest wymagane' });
+    required(fieldPath.name, { message: 'Pole imię jest wymagane' });
   });
 
   isFormValid = computed(() => !this.registerForm().invalid());
@@ -48,7 +49,7 @@ export class Register {
     this.loading = true;
     this.error = '';
 
-    this.http.post<RegisterInput>('http://localhost:5258/api/auth/register', this.registerModel())
+    this.http.post<RegisterInput>(`${apiURL}/auth/register`, this.registerModel())
       .subscribe({
         next: (response) => {
           console.log('Zarejestrowano', response);

@@ -1,43 +1,10 @@
-﻿<main class="app-shell">
-  <section class="hero">
-    <div class="hero__content">
-      <p class="eyebrow">Kanban Board</p>
-      <h1>Organizuj pracę w prosty i przejrzysty sposób</h1>
-      <p class="hero__description">
-        To jest wstępna wersja aplikacji. Tablica kanban jest już widoczna, a dalsze strony są dostępne dopiero po zalogowaniu.
-      </p>
+﻿<header>
+  <strong>{{title}}</strong>
+</header>
 
-      <div class="hero__actions">
-        <span class="pill pill--primary">Zaloguj się, aby wejść dalej</span>
-        <span class="pill pill--secondary">Pracuj w pływających kolumnach</span>
-      </div>
-    </div>
-
-    <div class="kanban-preview">
-      <div class="kanban-column">
-        <h2>Do zrobienia</h2>
-        <div class="kanban-card">Projekt UI</div>
-        <div class="kanban-card">Utworzyć komponenty</div>
-      </div>
-      <div class="kanban-column">
-        <h2>W trakcie</h2>
-        <div class="kanban-card">Integracja API</div>
-      </div>
-      <div class="kanban-column">
-        <h2>Gotowe</h2>
-        <div class="kanban-card">Logowanie</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="access-panel">
-    <div class="access-panel__header">
-      <h2>Dostęp do kolejnych stron</h2>
-      <p>Najpierw zaloguj się, aby przejść do pełnej aplikacji.</p>
-    </div>
-
-    <app-login></app-login>
-  </section>
-</main>
-
-<router-outlet />
+<div class="min-h-screen bg-gray-50">
+  <app-navigation></app-navigation>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
+    <router-outlet></router-outlet>
+  </main>
+</div>

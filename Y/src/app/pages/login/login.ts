@@ -6,6 +6,7 @@ import { email, form, FormField, required, submit } from '@angular/forms/signals
 import { LoginInput } from '../../api/data-contracts';
 import { AuthService } from '../../core/auth/auth.service';
 import { Register } from '../register/register';
+import { apiURL } from '../../api/config';
 
 @Component({
   selector: 'app-login',
@@ -33,9 +34,9 @@ export class Login {
   });
 
   loginForm = form(this.loginModel, (fieldPath) => {
-    required(fieldPath.email, {message: 'Email is required'});
-    email(fieldPath.email, {message: 'Invalid email format'});
-    required(fieldPath.password, {message: 'Password is required'});
+    required(fieldPath.email, { message: 'Pole e-mail jest wymagane' });
+    email(fieldPath.email, { message: 'Nieprawidłowy format e-mail' });
+    required(fieldPath.password, { message: 'Pole hasło jest wymagane' });
   });
 
   isFormValid = computed(() => !this.loginForm().invalid());
@@ -53,7 +54,7 @@ export class Login {
     this.error = '';
 
     this.http
-      .post<{ token?: string; accessToken?: string }>('http://localhost:5258/api/auth/login', this.loginModel())
+      .post<{ token?: string; accessToken?: string }>(`${apiURL}/auth/login`, this.loginModel())
       .subscribe({
         next: (response) => {
           const token = response.token ?? response.accessToken ?? null;

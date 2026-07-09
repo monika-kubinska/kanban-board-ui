@@ -1,7 +1,7 @@
 <form (ngSubmit)="onSubmit($event)">
   <div>
     <label>
-      Email
+      E-mail
       <input type="email" [formField]="registerForm.email" />
     </label>
     @if (registerForm.email().invalid() && registerForm.email().touched()) {
@@ -15,7 +15,7 @@
 
   <div>
     <label>
-      Password
+      Hasło
       <input type="password" [formField]="registerForm.password" />
     </label>
     @if (registerForm.password().invalid() && registerForm.password().touched()) {
@@ -29,7 +29,7 @@
 
   <div>
     <label>
-      Name
+      Imię
       <input type="text" [formField]="registerForm.name" />
     </label>
     @if (registerForm.name().invalid() && registerForm.name().touched()) {
@@ -41,12 +41,12 @@
     }
   </div>
 
-<button type="submit" (click)="register()" [disabled]="registerForm().invalid()">Register</button>
+  <button type="submit" (click)="register()" [disabled]="registerForm().invalid()">Zarejestruj się</button>
 </form>
 
 @if (isFormValid()) {
   <div class="valid">
-    <span>✓ Form is valid</span>
+    <span>✓ Formularz jest poprawny</span>
   </div>
 }
 
