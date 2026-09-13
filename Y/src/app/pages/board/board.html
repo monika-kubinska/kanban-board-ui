@@ -1,1 +1,49 @@
-<p>board works!</p>
+<main class="board-page" aria-labelledby="board-title">
+	<header class="board-heading">
+		<div>
+			<p class="eyebrow">Workspace</p>
+			<h1 id="board-title">Tablica zespołu</h1>
+		</div>
+
+		@if (teams().length > 0) {
+			<label class="team-picker">
+				<span>Zespół</span>
+				<select [value]="selectedTeamId()" (change)="selectTeam($any($event.target).value)">
+					@for (team of teams(); track team.id) {
+						<option [value]="team.id">{{ team.name }}</option>
+					}
+				</select>
+			</label>
+		}
+	</header>
+
+	@if (loading()) {
+		<p class="status" role="status">Ładowanie tablicy...</p>
+	} @else if (error()) {
+		<p class="status status-error" role="alert">{{ error() }}</p>
+	} @else if (teams().length === 0) {
+		<p class="status">Nie należysz jeszcze do żadnego zespołu.</p>
+	} @else if (board()?.columns?.length) {
+		<section class="board-grid" aria-label="Kolumny tablicy">
+			@for (column of board()?.columns; track column.id) {
+				<section class="board-column" [attr.aria-labelledby]="'column-' + column.id">
+					<h2 [id]="'column-' + column.id">{{ column.name }}</h2>
+					<div class="card-list">
+						@for (card of column.cards ?? []; track card.id) {
+							<article class="work-card">
+								<h3>{{ card.title }}</h3>
+								@if (card.description) {
+									<p>{{ card.description }}</p>
+								}
+							</article>
+						} @empty {
+							<p class="empty-column">Brak zadań</p>
+						}
+					</div>
+				</section>
+			}
+		</section>
+	} @else {
+		<p class="status">Tablica nie zawiera jeszcze zadań.</p>
+	}
+</main>

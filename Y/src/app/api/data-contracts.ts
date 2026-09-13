@@ -33,3 +33,21 @@ export interface User {
   email?: string;
   role?: UserRole;
 }
+
+export interface Board {
+  teamId?: string;
+  teamName?: string;
+  columns?: BoardColumn[];
+}
+
+export interface BoardColumn {
+  id: string;
+  name: string;
+  cards?: BoardCard[];
+}
+
+export interface BoardCard {
+  id: string;
+  title: string;
+  description?: string;
+}
