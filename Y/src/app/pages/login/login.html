@@ -8,7 +8,7 @@
   </div>
 } @else {
   @if (!showRegisterForm) {
-    <form (ngSubmit)="onSubmit($event)">
+    <form (submit)="login($event)">
       <div>
         <label>
           E-mail
@@ -37,7 +37,7 @@
         }
       </div>
 
-      <button type="button" (click)="login()" [disabled]="loginForm().invalid()">Zaloguj się</button>
+      <button type="submit" [disabled]="loginForm().invalid() || loading">Zaloguj się</button>
     </form>
 
     <div>

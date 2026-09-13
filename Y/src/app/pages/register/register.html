@@ -1,4 +1,4 @@
-<form (ngSubmit)="onSubmit($event)">
+<form (submit)="register($event)">
   <div>
     <label>
       E-mail
@@ -41,7 +41,7 @@
     }
   </div>
 
-  <button type="submit" (click)="register()" [disabled]="registerForm().invalid()">Zarejestruj się</button>
+  <button type="submit" [disabled]="loading">Zarejestruj się</button>
 </form>
 
 @if (isFormValid()) {

@@ -1,10 +1,10 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { form, required, email, submit, FormField } from '@angular/forms/signals';
+import { Component, computed, EventEmitter, inject, Output, signal } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { form, required, email, FormField } from '@angular/forms/signals';
+import { Router } from '@angular/router';
 import { RegisterInput } from '../../api/data-contracts';
 import { CommonModule } from '@angular/common';
-import { apiURL } from '../../api/config';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -13,8 +13,8 @@ import { apiURL } from '../../api/config';
   styleUrl: './register.css',
 })
 export class Register {
-  private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   @Output() registerSuccess = new EventEmitter<void>();
   loading = false;
@@ -37,39 +37,31 @@ export class Register {
 
   isFormValid = computed(() => !this.registerForm().invalid());
 
-  register(): void {
-    console.log('register form submitted:', this.registerForm());
+  register(event: SubmitEvent): void {
+    event.preventDefault();
+    console.log('Registering user with data:', this.registerModel());
     if (this.registerForm().invalid()) {
       this.registerForm().markAsTouched();
+      console.log('Form is invalid. Marking fields as touched.');
       return;
     }
-
-    console.log('register form is valid. Proceeding with register...');
 
     this.loading = true;
     this.error = '';
 
-    this.http.post<RegisterInput>(`${apiURL}/auth/register`, this.registerModel())
+    this.authService.register(this.registerModel())
       .subscribe({
-        next: (response) => {
-          console.log('Zarejestrowano', response);
+        next: () => {
+          console.log('Registration successful. Navigating to login page.');
           this.loading = false;
-          this.registerSuccess.emit();},
+          this.registerSuccess.emit();
+          void this.router.navigateByUrl('/login');
+        },
         error: () => {
-          this.error = 'Nieprawidłowy register lub hasło';
+          console.error('Registration failed. Setting error message.');
+          this.error = 'Nie udało się utworzyć konta';
           this.loading = false;
         }
       });
-  }
-
-  onSubmit(event: Event) {
-    console.log('Form submitted:', this.registerForm());
-
-    event.preventDefault();
-    submit(this.registerForm, async () => {
-      const credentials = this.registerModel();
-      console.log('Logging in with:', credentials);
-      // Add your register logic here
-    });
   }
 }

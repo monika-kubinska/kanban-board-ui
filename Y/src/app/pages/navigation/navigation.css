@@ -1,9 +1,54 @@
-nav {
-  padding: 10px 0 10px 0;
+.site-header {
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid #dce7ff;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
 }
 
-nav .menu-link {
-  padding: 10px;
+.brand,
+.account-nav a,
+.account-nav button {
+  color: #14213d;
   text-decoration: none;
-  font-size: 18px;
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.account-nav {
+  align-items: center;
+  display: flex;
+  gap: 1.25rem;
+}
+
+.account-nav a {
+  font-weight: 600;
+}
+
+.account-nav a:hover {
+  color: #4f6df5;
+}
+
+.account-nav button {
+  background: transparent;
+  border: 1px solid #dce7ff;
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+}
+
+.account-nav button:hover {
+  border-color: #4f6df5;
+  color: #4f6df5;
+}
+
+.user-name {
+  color: #50607a;
+  font-weight: 600;
 }

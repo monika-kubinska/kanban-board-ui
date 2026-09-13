@@ -1,12 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { email, form, FormField, required, submit } from '@angular/forms/signals';
+import { ReactiveFormsModule } from '@angular/forms';
+import { email, form, FormField, required } from '@angular/forms/signals';
+import { Router } from '@angular/router';
 import { LoginInput } from '../../api/data-contracts';
 import { AuthService } from '../../core/auth/auth.service';
 import { Register } from '../register/register';
-import { apiURL } from '../../api/config';
 
 @Component({
   selector: 'app-login',
@@ -15,9 +14,8 @@ import { apiURL } from '../../api/config';
   styleUrl: './login.css',
 })
 export class Login {
-  private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
-  private authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   loading = false;
   showRegisterForm = false;
@@ -41,29 +39,24 @@ export class Login {
 
   isFormValid = computed(() => !this.loginForm().invalid());
 
-  login(): void {
-    console.log('Login form submitted:', this.loginForm());
+  login(event: SubmitEvent): void {
+    event.preventDefault();
     if (this.loginForm().invalid()) {
       this.loginForm().markAsTouched();
       return;
     }
 
-    console.log('Login form is valid. Proceeding with login...');
-
     this.loading = true;
     this.error = '';
 
-    this.http
-      .post<{ token?: string; accessToken?: string }>(`${apiURL}/auth/login`, this.loginModel())
+    this.authService
+      .login(this.loginModel())
       .subscribe({
-        next: (response) => {
-          const token = response.token ?? response.accessToken ?? null;
-          this.authService.setToken(token);
-          console.log('Zalogowano', response);
+        next: () => {
           this.loading = false;
+          void this.router.navigateByUrl('/');
         },
         error: () => {
-          this.authService.removeToken();
           this.error = 'Nieprawidłowy login lub hasło';
           this.loading = false;
         },
@@ -74,13 +67,4 @@ export class Login {
     this.showRegisterForm = true;
   }
 
-  onSubmit(event: Event) {
-    console.log('Form submitted:', this.loginForm());
-
-    event.preventDefault();
-    submit(this.loginForm, async () => {
-      const credentials = this.loginModel();
-      console.log('Logging in with:', credentials);
-    });
-  }
 }
