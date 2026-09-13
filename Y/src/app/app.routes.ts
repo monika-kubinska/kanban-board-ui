@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, Routes } from '@angular/router';
 import { AuthService } from './core/auth/auth.service';
 import { Board } from './pages/board/board';
+import { Account } from './pages/account/account';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 
@@ -25,6 +26,11 @@ export const routes: Routes = [
     path: 'register',
     component: Register,
     canActivate: [guestGuard],
+  },
+  {
+    path: 'account',
+    component: Account,
+    canActivate: [authenticatedGuard],
   },
   {
     path: '',

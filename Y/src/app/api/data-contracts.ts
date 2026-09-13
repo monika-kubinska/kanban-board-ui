@@ -8,3 +8,10 @@ export interface RegisterInput {
   password: string;
   name: string;
 }
+
+export interface Team {
+  id: string;
+  name: string;
+}
+
+export type UserRole = 'admin' | 'teamMember' | string;

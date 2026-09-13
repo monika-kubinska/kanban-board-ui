@@ -51,4 +51,11 @@
 .user-name {
   color: #50607a;
   font-weight: 600;
+  text-decoration: none;
+}
+
+.user-name small {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
 }

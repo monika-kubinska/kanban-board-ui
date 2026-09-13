@@ -1,1 +1,35 @@
-<p>account works!</p>
+<section class="profile-page" aria-labelledby="profile-title">
+	<div class="profile-heading">
+		<div>
+			<p class="eyebrow">Profil użytkownika</p>
+			<h1 id="profile-title">{{ userName() || 'Użytkownik' }}</h1>
+			@if (userEmail()) {
+				<p class="email">{{ userEmail() }}</p>
+			}
+			@if (userRole()) {
+				<p class="role">Rola: {{ userRole() }}</p>
+			}
+		</div>
+	</div>
+
+	<section class="teams-section" aria-labelledby="teams-title">
+		<div class="section-heading">
+			<h2 id="teams-title">Moje zespoły</h2>
+			<span>{{ teams().length }}</span>
+		</div>
+
+		@if (loading()) {
+			<p class="message">Ładowanie zespołów...</p>
+		} @else if (error()) {
+			<p class="message error">{{ error() }}</p>
+		} @else if (teams().length === 0) {
+			<p class="message">Nie należysz jeszcze do żadnego zespołu.</p>
+		} @else {
+			<ul class="team-list">
+				@for (team of teams(); track team.id) {
+					<li>{{ team.name }}</li>
+				}
+			</ul>
+		}
+	</section>
+</section>

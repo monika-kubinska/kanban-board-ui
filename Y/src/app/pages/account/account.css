@@ -1,0 +1,84 @@
+.profile-page {
+	margin: 0 auto;
+	max-width: 48rem;
+}
+
+.profile-heading,
+.teams-section {
+	background: #ffffff;
+	border: 1px solid #dce7ff;
+	border-radius: 8px;
+	box-shadow: 0 10px 24px rgba(20, 33, 61, 0.06);
+	padding: 1.5rem;
+}
+
+.teams-section {
+	margin-top: 1.5rem;
+}
+
+.eyebrow {
+	color: #4f6df5;
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	margin: 0 0 0.5rem;
+	text-transform: uppercase;
+}
+
+h1,
+h2 {
+	color: #14213d;
+	margin: 0;
+}
+
+h1 {
+	font-size: 2rem;
+}
+
+.email,
+.message {
+	color: #50607a;
+}
+
+.email {
+	margin: 0.35rem 0 0;
+}
+
+.section-heading {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}
+
+.section-heading span {
+	background: #eef3ff;
+	border-radius: 999px;
+	color: #3150b9;
+	font-weight: 700;
+	min-width: 2rem;
+	padding: 0.25rem 0.5rem;
+	text-align: center;
+}
+
+.team-list {
+	display: grid;
+	gap: 0.75rem;
+	list-style: none;
+	margin: 1.25rem 0 0;
+	padding: 0;
+}
+
+.team-list li {
+	border: 1px solid #dce7ff;
+	border-radius: 6px;
+	color: #14213d;
+	padding: 0.85rem 1rem;
+}
+
+.message {
+	margin: 1.25rem 0 0;
+}
+
+.message.error {
+	color: #b42318;
+}

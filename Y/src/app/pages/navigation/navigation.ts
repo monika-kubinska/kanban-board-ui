@@ -16,6 +16,7 @@ export class Navigation {
 
   readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
   readonly userName = this.authService.userName;
+  readonly userEmail = this.authService.userEmail;
 
   logout(): void {
     this.authService.removeToken();

@@ -3,7 +3,12 @@
 
   <nav class="account-nav" aria-label="Konto">
     @if (isAuthenticated()) {
-      <span class="user-name">{{ userName() || 'Użytkownik' }}</span>
+      <a class="user-name" routerLink="/account">
+        {{ userName() || 'Użytkownik' }}
+        @if (userEmail()) {
+          <small>{{ userEmail() }}</small>
+        }
+      </a>
       <button type="button" (click)="logout()">Wyloguj</button>
     } @else {
       <a routerLink="/login">Zaloguj</a>
