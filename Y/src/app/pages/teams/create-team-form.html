@@ -1,0 +1,19 @@
+<form (submit)="submit($event)">
+  <label for="team-name">Nazwa zespołu</label>
+  <div class="form-row">
+    <input
+      id="team-name"
+      name="teamName"
+      type="text"
+      [(ngModel)]="teamName"
+      maxlength="100"
+      required
+    />
+    <button type="submit" [disabled]="loading() || !teamName.trim()">
+      {{ loading() ? 'Tworzenie...' : 'Utwórz zespół' }}
+    </button>
+  </div>
+</form>
+@if (error()) {
+  <p class="message error">{{ error() }}</p>
+}

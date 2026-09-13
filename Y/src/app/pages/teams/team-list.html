@@ -1,0 +1,89 @@
+<section class="list-panel" aria-labelledby="my-teams-title">
+  <div class="section-heading">
+    <h2 id="my-teams-title">Moje zespoły</h2>
+    <span>{{ teams().length }}</span>
+  </div>
+
+  @if (loading()) {
+    <p class="message">Ładowanie zespołów...</p>
+  } @else if (error()) {
+    <p class="message error">{{ error() }}</p>
+  } @else if (teams().length === 0) {
+    <p class="message">Nie należysz jeszcze do żadnego zespołu.</p>
+  } @else {
+    <ul class="team-list">
+      @for (team of teams(); track team.id) {
+        <li>
+          <button
+            class="team-toggle"
+            type="button"
+            [attr.aria-expanded]="isExpanded(team.id)"
+            (click)="toggle.emit(team.id)"
+          >
+            <strong>{{ team.name }}</strong>
+            <span>{{ isExpanded(team.id) ? 'Zwiń' : 'Rozwiń' }}</span>
+          </button>
+
+          @if (isExpanded(team.id)) {
+            <div class="member-panel">
+              @if (canManageMembers()) {
+                <div class="add-member-row">
+                  <label [attr.for]="'member-' + team.id">Dodaj użytkownika</label>
+                  <select
+                    [id]="'member-' + team.id"
+                    [ngModel]="selectedUsers[team.id] || ''"
+                    (ngModelChange)="selectUser(team.id, $event)"
+                  >
+                    <option value="">Wybierz użytkownika</option>
+                    @for (user of users(); track user.id) {
+                      @if (!isMember(team, user.id)) {
+                        <option [value]="user.id">{{ user.name || user.email || user.id }}</option>
+                      }
+                    }
+                  </select>
+                  <button
+                    class="add-button"
+                    type="button"
+                    [disabled]="addingMember() === team.id || !selectedUsers[team.id]"
+                    (click)="submitAddMember(team.id)"
+                  >
+                    {{ addingMember() === team.id ? 'Dodawanie...' : 'Dodaj' }}
+                  </button>
+                </div>
+              }
+              @if (!team.members?.length) {
+                <p class="message">Brak członków w tym zespole.</p>
+              } @else {
+                <ul class="member-list">
+                  @for (member of team.members; track member.userId) {
+                    <li>
+                      <div>
+                        <strong>{{ member.name || 'Użytkownik' }}</strong>
+                        @if (member.email) {
+                          <small>{{ member.email }}</small>
+                        }
+                      </div>
+                      @if (canManageMembers()) {
+                        <button
+                          class="remove-button"
+                          type="button"
+                          [disabled]="removingMember() === member.userId"
+                          (click)="removeMember.emit({ teamId: team.id, userId: member.userId })"
+                        >
+                          {{ removingMember() === member.userId ? 'Usuwanie...' : 'Usuń' }}
+                        </button>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+  @if (memberError()) {
+    <p class="message error">{{ memberError() }}</p>
+  }
+</section>

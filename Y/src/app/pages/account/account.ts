@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth/auth.service';
 import { Team } from '../../api/data-contracts';
+import { CreateTeamForm } from '../teams/create-team-form';
 import { TeamsService } from '../teams/teams.service';
 
 @Component({
   selector: 'app-account',
-  imports: [FormsModule],
+  imports: [CreateTeamForm],
   templateUrl: './account.html',
   styleUrl: './account.css',
 })
@@ -22,17 +22,13 @@ export class Account {
   readonly error = signal('');
   readonly creatingTeam = signal(false);
   readonly createTeamError = signal('');
-  newTeamName = '';
 
   constructor() {
     this.loadTeams();
   }
 
-  createTeam(event: SubmitEvent): void {
-    event.preventDefault();
-    const name = this.newTeamName.trim();
-
-    if (!name || this.creatingTeam()) {
+  createTeam(name: string): void {
+    if (this.creatingTeam()) {
       return;
     }
 
@@ -41,7 +37,6 @@ export class Account {
 
     this.teamsService.createTeam({ name }).subscribe({
       next: () => {
-        this.newTeamName = '';
         this.creatingTeam.set(false);
         this.loadTeams();
       },

@@ -35,4 +35,10 @@ describe('AuthService', () => {
     expect(service.getToken()).toBeNull();
     expect(service.isAuthenticated()).toBeFalsy();
   });
+
+  it('should recognize admin role regardless of casing', () => {
+    service.setToken('header.eyJyb2xlIjoiYWRtaW4ifQ.signature');
+
+    expect(service.isAdmin()).toBeTruthy();
+  });
 });

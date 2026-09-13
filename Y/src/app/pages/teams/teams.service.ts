@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { apiURL } from '../../api/config';
-import { CreateTeamInput, Team, User } from '../../api/data-contracts';
+import { CreateTeamInput, Team } from '../../api/data-contracts';
 
 @Injectable({ providedIn: 'root' })
 export class TeamsService {
@@ -36,8 +36,4 @@ export class TeamsService {
       .pipe(map(() => undefined));
   }
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${apiURL}/teams/users`, {
-    });
-  }
 }
