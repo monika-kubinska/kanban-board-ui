@@ -60,6 +60,12 @@ export const routes: Routes = [
     canActivate: [authenticatedGuard, teamMemberGuard],
   },
   {
+    path: 'backlog/:teamId',
+    component: Board,
+    data: { view: 'backlog' },
+    canActivate: [authenticatedGuard, teamMemberGuard],
+  },
+  {
     path: '',
     component: Board,
     canActivate: [authenticatedGuard],

@@ -30,6 +30,68 @@ h1 {
 	margin-bottom: 0;
 }
 
+.view-switcher {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.view-switcher button {
+	background: transparent;
+	border: 1px solid #c8ced6;
+	border-radius: 0.35rem;
+	color: #3e4854;
+	cursor: pointer;
+	font: inherit;
+	padding: 0.55rem 0.8rem;
+}
+
+.view-switcher button.active {
+	background: #25364a;
+	border-color: #25364a;
+	color: #fff;
+}
+
+.create-item-form {
+	align-items: end;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+}
+
+.create-item-form > div {
+	display: grid;
+	gap: 0.3rem;
+}
+
+.create-item-form label {
+	color: #6d7785;
+	font-size: 0.8rem;
+	font-weight: 700;
+}
+
+.create-item-form input {
+	border: 1px solid #c8ced6;
+	border-radius: 0.35rem;
+	font: inherit;
+	min-width: 10rem;
+	padding: 0.65rem 0.75rem;
+}
+
+.create-item-form button {
+	background: #25364a;
+	border: 1px solid #25364a;
+	border-radius: 0.35rem;
+	color: #fff;
+	cursor: pointer;
+	font: inherit;
+	padding: 0.65rem 0.9rem;
+}
+
+.create-item-form button:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
 .team-picker {
 	display: grid;
 	gap: 0.35rem;
@@ -75,6 +137,28 @@ select {
 	gap: 0.75rem;
 }
 
+.backlog-list {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.backlog-list .work-card {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+}
+
+.state-picker {
+	display: grid;
+	gap: 0.3rem;
+}
+
+.state-picker span {
+	color: #6d7785;
+	font-size: 0.75rem;
+}
+
 .work-card {
 	background: #fff;
 	border: 1px solid #d9dee5;
@@ -105,6 +189,11 @@ select {
 
 @media (max-width: 640px) {
 	.board-heading {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.backlog-list .work-card {
 		align-items: stretch;
 		flex-direction: column;
 	}

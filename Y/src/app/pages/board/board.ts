@@ -1,77 +1,72 @@
-import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Board as BoardData, Team } from '../../api/data-contracts';
-import { TeamsService } from '../teams/teams.service';
-import { BoardService } from './board.service';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CreateItemInput } from '../../api/data-contracts';
+import { BoardFacade } from './board.facade';
 
 @Component({
   selector: 'app-board',
-  imports: [],
+  imports: [FormsModule],
+  providers: [BoardFacade],
   templateUrl: './board.html',
   styleUrl: './board.css',
 })
 export class Board {
-  private readonly boardService = inject(BoardService);
-  private readonly teamsService = inject(TeamsService);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly facade = inject(BoardFacade);
 
-  readonly teams = signal<Team[]>([]);
-  readonly selectedTeamId = signal('');
-  readonly board = signal<BoardData | null>(null);
-  readonly loading = signal(true);
-  readonly error = signal('');
-
-  constructor() {
-    this.loadTeams();
-  }
+  readonly teams = this.facade.teams;
+  readonly selectedTeamId = this.facade.selectedTeamId;
+  readonly items = this.facade.items;
+  readonly loading = this.facade.loading;
+  readonly error = this.facade.error;
+  readonly updatingItemId = this.facade.updatingItemId;
+  readonly creatingItem = this.facade.creatingItem;
+  readonly createItemError = this.facade.createItemError;
+  readonly isBacklog = this.facade.isBacklog;
+  readonly sprintColumns = this.facade.sprintColumns;
+  itemTitle = '';
+  itemType = '';
+  itemEstimation: number | null = null;
 
   selectTeam(teamId: string): void {
-    if (!this.teams().some((team) => team.id === teamId)) {
+    this.facade.selectTeam(teamId);
+  }
+
+  openBacklog(): void {
+    this.facade.openBacklog();
+  }
+
+  openSprintBoard(): void {
+    this.facade.openSprintBoard();
+  }
+
+  changeState(itemId: string, state: string): void {
+    this.facade.changeState(itemId, state);
+  }
+
+  createItem(event: SubmitEvent): void {
+    event.preventDefault();
+    const title = this.itemTitle.trim();
+    const teamId = this.selectedTeamId();
+
+    if (!title || !teamId || this.creatingItem()) {
       return;
     }
 
-    this.selectedTeamId.set(teamId);
-    this.loadBoard(teamId);
-    void this.router.navigate(['/boards', teamId]);
-  }
+    const item: CreateItemInput = {
+      teamId,
+      title,
+      type: this.itemType.trim() || undefined,
+      state: 'To Do',
+      estimation: this.itemEstimation ?? undefined,
+    };
 
-  private loadTeams(): void {
-    this.teamsService.getTeams().subscribe({
-      next: (teams) => {
-        this.teams.set(teams);
-        const routeTeamId = this.route.snapshot.paramMap.get('teamId');
-        const selectedTeamId = routeTeamId && teams.some((team) => team.id === routeTeamId)
-          ? routeTeamId
-          : teams[0]?.id ?? '';
-
-        this.selectedTeamId.set(selectedTeamId);
-        if (selectedTeamId) {
-          this.loadBoard(selectedTeamId);
-        } else {
-          this.loading.set(false);
-        }
+    this.facade.createItem(item).subscribe({
+      next: () => {
+        this.itemTitle = '';
+        this.itemType = '';
+        this.itemEstimation = null;
       },
-      error: () => {
-        this.error.set('Nie udało się pobrać listy zespołów.');
-        this.loading.set(false);
-      },
-    });
-  }
-
-  private loadBoard(teamId: string): void {
-    this.loading.set(true);
-    this.error.set('');
-    this.boardService.getBoard(teamId).subscribe({
-      next: (board) => {
-        this.board.set(board);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.board.set(null);
-        this.error.set('Nie udało się pobrać tablicy zespołu.');
-        this.loading.set(false);
-      },
+      error: () => undefined,
     });
   }
 }

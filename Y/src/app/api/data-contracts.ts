@@ -34,20 +34,20 @@ export interface User {
   role?: UserRole;
 }
 
-export interface Board {
-  teamId?: string;
-  teamName?: string;
-  columns?: BoardColumn[];
-}
+export type ItemState = 'To Do' | string;
 
-export interface BoardColumn {
-  id: string;
-  name: string;
-  cards?: BoardCard[];
-}
-
-export interface BoardCard {
+export interface Item {
   id: string;
   title: string;
-  description?: string;
+  type?: string;
+  state: ItemState;
+  estimation?: number;
+}
+
+export interface CreateItemInput {
+  teamId: string;
+  title: string;
+  type?: string;
+  state: ItemState;
+  estimation?: number;
 }

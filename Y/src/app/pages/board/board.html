@@ -2,7 +2,7 @@
 	<header class="board-heading">
 		<div>
 			<p class="eyebrow">Workspace</p>
-			<h1 id="board-title">Tablica zespołu</h1>
+			<h1 id="board-title">{{ isBacklog ? 'Product backlog' : 'Sprint board' }}</h1>
 		</div>
 
 		@if (teams().length > 0) {
@@ -17,33 +17,86 @@
 		}
 	</header>
 
+	<nav class="view-switcher" aria-label="Widok pracy">
+		<button type="button" [class.active]="isBacklog" (click)="openBacklog()">Backlog</button>
+		<button type="button" [class.active]="!isBacklog" (click)="openSprintBoard()">Sprint board</button>
+	</nav>
+
+	@if (selectedTeamId()) {
+		<form class="create-item-form" (submit)="createItem($event)">
+			<div>
+				<label for="item-title">Nowy item</label>
+				<input id="item-title" name="itemTitle" type="text" [(ngModel)]="itemTitle" maxlength="200" required />
+			</div>
+			<div>
+				<label for="item-type">Typ</label>
+				<input id="item-type" name="itemType" type="text" [(ngModel)]="itemType" maxlength="50" />
+			</div>
+			<div>
+				<label for="item-estimation">Estymacja</label>
+				<input id="item-estimation" name="itemEstimation" type="number" min="0" [(ngModel)]="itemEstimation" />
+			</div>
+			<button type="submit" [disabled]="creatingItem() || !itemTitle.trim()">
+				{{ creatingItem() ? 'Tworzenie...' : 'Utwórz item' }}
+			</button>
+		</form>
+		@if (createItemError()) {
+			<p class="status status-error" role="alert">{{ createItemError() }}</p>
+		}
+	}
+
 	@if (loading()) {
 		<p class="status" role="status">Ładowanie tablicy...</p>
 	} @else if (error()) {
 		<p class="status status-error" role="alert">{{ error() }}</p>
 	} @else if (teams().length === 0) {
 		<p class="status">Nie należysz jeszcze do żadnego zespołu.</p>
-	} @else if (board()?.columns?.length) {
-		<section class="board-grid" aria-label="Kolumny tablicy">
-			@for (column of board()?.columns; track column.id) {
-				<section class="board-column" [attr.aria-labelledby]="'column-' + column.id">
-					<h2 [id]="'column-' + column.id">{{ column.name }}</h2>
+	} @else if (isBacklog) {
+		<section class="backlog-list" aria-label="Elementy backlogu">
+			@for (item of items(); track item.id) {
+				<article class="work-card">
+					<div>
+						<h2>{{ item.title }}</h2>
+						<p>{{ item.type || 'Item' }} · {{ item.state }}</p>
+					</div>
+					<label class="state-picker">
+						<span>Stan</span>
+						<select [value]="item.state" (change)="changeState(item.id, $any($event.target).value)" [disabled]="updatingItemId() === item.id">
+							<option value="To Do">To Do</option>
+							<option value="In Progress">In Progress</option>
+							<option value="Done">Done</option>
+						</select>
+					</label>
+				</article>
+			} @empty {
+				<p class="status">Backlog jest pusty.</p>
+			}
+		</section>
+	} @else if (sprintColumns().length) {
+		<section class="board-grid" aria-label="Elementy pogrupowane po stanie">
+			@for (column of sprintColumns(); track column.state) {
+				<section class="board-column" [attr.aria-labelledby]="'column-' + column.state">
+					<h2 [id]="'column-' + column.state">{{ column.state }}</h2>
 					<div class="card-list">
-						@for (card of column.cards ?? []; track card.id) {
+						@for (item of column.items; track item.id) {
 							<article class="work-card">
-								<h3>{{ card.title }}</h3>
-								@if (card.description) {
-									<p>{{ card.description }}</p>
-								}
-							</article>
-						} @empty {
-							<p class="empty-column">Brak zadań</p>
+								<h3>{{ item.title }}</h3>
+								<p>{{ item.type || 'Item' }}{{ item.estimation ? ' · ' + item.estimation + ' h' : '' }}</p>
+								<label class="state-picker">
+									<span>Stan</span>
+									<select [value]="item.state" (change)="changeState(item.id, $any($event.target).value)" [disabled]="updatingItemId() === item.id">
+										<option value="To Do">To Do</option>
+										<option value="In Progress">In Progress</option>
+										<option value="Done">Done</option>
+									</select>
+								</label>
+								</article>
 						}
 					</div>
 				</section>
 			}
 		</section>
 	} @else {
-		<p class="status">Tablica nie zawiera jeszcze zadań.</p>
+		<p class="status">Brak elementów na sprint boardzie.</p>
 	}
 </main>

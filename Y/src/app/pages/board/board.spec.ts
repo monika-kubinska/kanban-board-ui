@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 
 import { TeamsService } from '../teams/teams.service';
 import { Board } from './board';
-import { BoardService } from './board.service';
+import { ItemsService } from './items.service';
 
 describe('Board', () => {
   let component: Board;
@@ -14,10 +14,13 @@ describe('Board', () => {
     await TestBed.configureTestingModule({
       imports: [Board],
       providers: [
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: {}, paramMap: { get: () => 'team-1' } } },
+        },
         { provide: Router, useValue: { navigate: () => Promise.resolve(true) } },
-        { provide: TeamsService, useValue: { getTeams: () => of([]) } },
-        { provide: BoardService, useValue: { getBoard: () => of({ columns: [] }) } },
+        { provide: TeamsService, useValue: { getTeams: () => of([{ id: 'team-1', name: 'Team 1' }]) } },
+        { provide: ItemsService, useValue: { getItems: () => of([]) } },
       ],
     }).compileComponents();
 
