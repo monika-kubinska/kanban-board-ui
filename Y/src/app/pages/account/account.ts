@@ -7,7 +7,6 @@ import { TeamsService } from '../teams/teams.service';
 @Component({
   selector: 'app-account',
   imports: [FormsModule],
-  providers: [TeamsService],
   templateUrl: './account.html',
   styleUrl: './account.css',
 })

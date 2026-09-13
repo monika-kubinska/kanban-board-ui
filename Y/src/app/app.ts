@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { Login } from "./pages/login/login";
 import { Navigation } from "./pages/navigation/navigation";
 
 @Component({

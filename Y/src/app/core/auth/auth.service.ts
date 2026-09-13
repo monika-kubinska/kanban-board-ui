@@ -75,8 +75,9 @@ export class AuthService {
 
     this.token.set(token);
     this.setUserRole(this.readRoleFromToken(token));
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(this.storageKey, token);
+    const storage = this.storage;
+    if (storage) {
+      storage.setItem(this.storageKey, token);
     }
   }
 
@@ -89,8 +90,9 @@ export class AuthService {
     this.setUserName(null);
     this.setUserEmail(null);
     this.setUserRole(null);
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(this.storageKey);
+    const storage = this.storage;
+    if (storage) {
+      storage.removeItem(this.storageKey);
     }
   }
 
@@ -99,68 +101,68 @@ export class AuthService {
   }
 
   private readStoredToken(): string | null {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-
-    return window.localStorage.getItem(this.storageKey);
+    return this.storage?.getItem(this.storageKey) ?? null;
   }
 
   private setUserName(name: string | null): void {
     this.userName.set(name);
-    if (typeof window !== 'undefined') {
+    const storage = this.storage;
+    if (storage) {
       if (name) {
-        window.localStorage.setItem(this.userNameStorageKey, name);
+        storage.setItem(this.userNameStorageKey, name);
       } else {
-        window.localStorage.removeItem(this.userNameStorageKey);
+        storage.removeItem(this.userNameStorageKey);
       }
     }
   }
 
   private readStoredUserName(): string | null {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-
-    return window.localStorage.getItem(this.userNameStorageKey);
+    return this.storage?.getItem(this.userNameStorageKey) ?? null;
   }
 
   private setUserEmail(email: string | null): void {
     this.userEmail.set(email);
-    if (typeof window !== 'undefined') {
+    const storage = this.storage;
+    if (storage) {
       if (email) {
-        window.localStorage.setItem(this.userEmailStorageKey, email);
+        storage.setItem(this.userEmailStorageKey, email);
       } else {
-        window.localStorage.removeItem(this.userEmailStorageKey);
+        storage.removeItem(this.userEmailStorageKey);
       }
     }
   }
 
   private readStoredUserEmail(): string | null {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-
-    return window.localStorage.getItem(this.userEmailStorageKey);
+    return this.storage?.getItem(this.userEmailStorageKey) ?? null;
   }
 
   private setUserRole(role: UserRole | null): void {
     this.userRole.set(role);
-    if (typeof window !== 'undefined') {
+    const storage = this.storage;
+    if (storage) {
       if (role) {
-        window.localStorage.setItem(this.userRoleStorageKey, role);
+        storage.setItem(this.userRoleStorageKey, role);
       } else {
-        window.localStorage.removeItem(this.userRoleStorageKey);
+        storage.removeItem(this.userRoleStorageKey);
       }
     }
   }
 
   private readStoredUserRole(): UserRole | null {
+    return this.storage?.getItem(this.userRoleStorageKey) ?? null;
+  }
+
+  private get storage(): Storage | null {
     if (typeof window === 'undefined') {
       return null;
     }
 
-    return window.localStorage.getItem(this.userRoleStorageKey);
+    const storage = window.localStorage;
+    return typeof storage?.getItem === 'function' &&
+      typeof storage.setItem === 'function' &&
+      typeof storage.removeItem === 'function'
+      ? storage
+      : null;
   }
 
   private readRoleFromToken(token: string): UserRole | null {

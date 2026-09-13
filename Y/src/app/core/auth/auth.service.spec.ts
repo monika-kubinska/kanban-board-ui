@@ -8,7 +8,9 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(() => {
-    localStorage.clear();
+    if (typeof localStorage.clear === 'function') {
+      localStorage.clear();
+    }
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
