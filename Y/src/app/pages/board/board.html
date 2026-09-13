@@ -23,26 +23,13 @@
 	</nav>
 
 	@if (selectedTeamId()) {
-		<form class="create-item-form" (submit)="createItem($event)">
-			<div>
-				<label for="item-title">Nowy item</label>
-				<input id="item-title" name="itemTitle" type="text" [(ngModel)]="itemTitle" maxlength="200" required />
-			</div>
-			<div>
-				<label for="item-type">Typ</label>
-				<input id="item-type" name="itemType" type="text" [(ngModel)]="itemType" maxlength="50" />
-			</div>
-			<div>
-				<label for="item-estimation">Estymacja</label>
-				<input id="item-estimation" name="itemEstimation" type="number" min="0" [(ngModel)]="itemEstimation" />
-			</div>
-			<button type="submit" [disabled]="creatingItem() || !itemTitle.trim()">
-				{{ creatingItem() ? 'Tworzenie...' : 'Utwórz item' }}
-			</button>
-		</form>
-		@if (createItemError()) {
-			<p class="status status-error" role="alert">{{ createItemError() }}</p>
-		}
+		<app-create-item-form
+			[teamId]="selectedTeamId()"
+			[loading]="creatingItem()"
+			[error]="createItemError()"
+			[resetKey]="createResetKey()"
+			(create)="createItem($event)"
+		/>
 	}
 
 	@if (loading()) {
@@ -53,21 +40,16 @@
 		<p class="status">Nie należysz jeszcze do żadnego zespołu.</p>
 	} @else if (isBacklog) {
 		<section class="backlog-list" aria-label="Elementy backlogu">
-			@for (item of items(); track item.id) {
-				<article class="work-card">
-					<div>
-						<h2>{{ item.title }}</h2>
-						<p>{{ item.type || 'Item' }} · {{ item.state }}</p>
-					</div>
-					<label class="state-picker">
-						<span>Stan</span>
-						<select [value]="item.state" (change)="changeState(item.id, $any($event.target).value)" [disabled]="updatingItemId() === item.id">
-							<option value="To Do">To Do</option>
-							<option value="In Progress">In Progress</option>
-							<option value="Done">Done</option>
-						</select>
-					</label>
-				</article>
+			@for (item of backlogItems(); track item.id) {
+				<app-work-item-card
+					[item]="item"
+					[members]="teamMembers()"
+					[showState]="true"
+					[updating]="updatingItemId() === item.id"
+					[assigning]="assigningItemId() === item.id"
+					(stateChange)="changeState(item.id, $event)"
+					(assigneeChange)="assignUser(item.id, $event)"
+				/>
 			} @empty {
 				<p class="status">Backlog jest pusty.</p>
 			}
@@ -79,18 +61,14 @@
 					<h2 [id]="'column-' + column.state">{{ column.state }}</h2>
 					<div class="card-list">
 						@for (item of column.items; track item.id) {
-							<article class="work-card">
-								<h3>{{ item.title }}</h3>
-								<p>{{ item.type || 'Item' }}{{ item.estimation ? ' · ' + item.estimation + ' h' : '' }}</p>
-								<label class="state-picker">
-									<span>Stan</span>
-									<select [value]="item.state" (change)="changeState(item.id, $any($event.target).value)" [disabled]="updatingItemId() === item.id">
-										<option value="To Do">To Do</option>
-										<option value="In Progress">In Progress</option>
-										<option value="Done">Done</option>
-									</select>
-								</label>
-								</article>
+							<app-work-item-card
+								[item]="item"
+								[members]="teamMembers()"
+								[updating]="updatingItemId() === item.id"
+								[assigning]="assigningItemId() === item.id"
+								(stateChange)="changeState(item.id, $event)"
+								(assigneeChange)="assignUser(item.id, $event)"
+							/>
 						}
 					</div>
 				</section>

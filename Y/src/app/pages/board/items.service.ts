@@ -2,13 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { apiURL } from '../../api/config';
-import { CreateItemInput, Item } from '../../api/data-contracts';
+import { CreateItemInput, Item, ItemState } from '../../api/data-contracts';
 
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
   private readonly http = inject(HttpClient);
 
-  getItems(teamId: string, state?: string): Observable<Item[]> {
+  getItems(teamId: string, state?: ItemState): Observable<Item[]> {
     let params = new HttpParams().set('teamId', teamId);
     if (state) {
       params = params.set('state', state);
@@ -23,9 +23,15 @@ export class ItemsService {
       .pipe(map(() => undefined));
   }
 
-  changeState(itemId: string, state: string): Observable<void> {
+  changeState(itemId: string, state: ItemState): Observable<void> {
     return this.http
       .post(`${apiURL}/items/${itemId}/state`, { state }, { responseType: 'text' })
+      .pipe(map(() => undefined));
+  }
+
+  assignUser(itemId: string, userId: string | null): Observable<void> {
+    return this.http
+      .post(`${apiURL}/items/${itemId}/assignee`, { userId }, { responseType: 'text' })
       .pipe(map(() => undefined));
   }
 }

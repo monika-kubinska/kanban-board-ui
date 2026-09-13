@@ -1,0 +1,30 @@
+<article class="work-card">
+  <h2>{{ item().title }}</h2>
+  <p>
+    {{ item().type || 'Item' }}
+    @if (showState()) {
+      · {{ item().state }}
+    } @else if (item().estimation) {
+      · {{ item().estimation }} {{ estimationUnitLabel[item().estimationUnit || 'hours'] }}
+    }
+  </p>
+  <label class="state-picker">
+    <span>Stan</span>
+    <select [value]="item().state" (change)="changeState($event)" [disabled]="updating()">
+      @for (state of states; track state) {
+        <option [value]="state">{{ state }}</option>
+      }
+    </select>
+  </label>
+  <label class="assignee-picker">
+    <span>Przypisany użytkownik</span>
+    <select [value]="item().assigneeId || ''" (change)="assignUser($event)" [disabled]="assigning()">
+      <option value="" [selected]="!item().assigneeId">Nieprzypisany</option>
+      @for (member of assigneeOptions(); track member.userId) {
+        <option [value]="member.userId" [selected]="member.userId === item().assigneeId">
+          {{ member.name || member.email || member.userId }}
+        </option>
+      }
+    </select>
+  </label>
+</article>

@@ -26,6 +26,7 @@ export interface CreateTeamInput {
 }
 
 export type UserRole = 'admin' | 'teamMember' | string;
+export type ItemType = 'Epic' | 'Story' | 'Defect';
 
 export interface User {
   id: string;
@@ -34,20 +35,25 @@ export interface User {
   role?: UserRole;
 }
 
-export type ItemState = 'To Do' | string;
+export type ItemState = 'To Do' | 'Ready' | 'In Progress' | 'Code Review' | 'In Test' | 'Ready for Production' | 'Done';
+export type EstimationUnit = 'hours' | 'points';
 
 export interface Item {
   id: string;
   title: string;
-  type?: string;
+  type?: ItemType;
+  assigneeId?: string;
+  assignedUserId?: string;
   state: ItemState;
   estimation?: number;
+  estimationUnit?: EstimationUnit;
 }
 
 export interface CreateItemInput {
   teamId: string;
   title: string;
-  type?: string;
+  type: ItemType;
   state: ItemState;
   estimation?: number;
+  estimationUnit?: EstimationUnit;
 }

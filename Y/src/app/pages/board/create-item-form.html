@@ -1,0 +1,32 @@
+<form class="create-item-form" (submit)="submit($event)">
+  <div>
+    <label for="item-title">Nowy item</label>
+    <input id="item-title" name="itemTitle" type="text" [(ngModel)]="itemTitle" maxlength="200" required />
+  </div>
+  <div>
+    <label for="item-type">Typ</label>
+    <select id="item-type" name="itemType" [(ngModel)]="itemType" required>
+      <option value="" disabled>Wybierz typ</option>
+      @for (type of itemTypes; track type) {
+        <option [value]="type">{{ type }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label for="item-estimation">Estymacja</label>
+    <input id="item-estimation" name="itemEstimation" type="number" min="0" [(ngModel)]="itemEstimation" />
+  </div>
+  <div>
+    <label for="item-estimation-unit">Jednostka</label>
+    <select id="item-estimation-unit" name="itemEstimationUnit" [(ngModel)]="itemEstimationUnit">
+      <option value="hours">Godziny</option>
+      <option value="points">Punkty</option>
+    </select>
+  </div>
+  <button type="submit" [disabled]="loading() || !itemTitle.trim() || !itemType">
+    {{ loading() ? 'Tworzenie...' : 'Utwórz item' }}
+  </button>
+</form>
+@if (error()) {
+  <p class="status status-error" role="alert">{{ error() }}</p>
+}

@@ -1,0 +1,37 @@
+.work-card {
+  background: #fff;
+  border: 1px solid #d9dee5;
+  border-radius: 0.35rem;
+  padding: 0.9rem;
+}
+
+.work-card h2 {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.work-card p {
+  color: #6d7785;
+  font-size: 0.875rem;
+  margin-bottom: 0.9rem;
+}
+
+.state-picker,
+.assignee-picker {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
+}
+
+.state-picker span,
+.assignee-picker span {
+  color: #6d7785;
+  font-size: 0.75rem;
+}
+
+select {
+  border: 1px solid #c8ced6;
+  border-radius: 0.35rem;
+  font: inherit;
+  padding: 0.65rem 2rem 0.65rem 0.75rem;
+}

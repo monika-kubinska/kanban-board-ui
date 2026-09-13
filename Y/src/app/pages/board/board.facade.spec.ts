@@ -11,6 +11,7 @@ describe('BoardFacade', () => {
   let itemsService: {
     getItems: ReturnType<typeof vi.fn>;
     changeState: ReturnType<typeof vi.fn>;
+    assignUser: ReturnType<typeof vi.fn>;
     createItem: ReturnType<typeof vi.fn>;
   };
 
@@ -18,6 +19,7 @@ describe('BoardFacade', () => {
     itemsService = {
       getItems: vi.fn(() => of([])),
       changeState: vi.fn(() => of(undefined)),
+      assignUser: vi.fn(() => of(undefined)),
       createItem: vi.fn(() => of(undefined)),
     };
 
@@ -60,6 +62,18 @@ describe('BoardFacade', () => {
     ]);
   });
 
+  it('filters the backlog to To Do items', () => {
+    facade.items.set([
+      { id: '1', title: 'Backlog item', state: 'To Do' },
+      { id: '2', title: 'Ready item', state: 'Ready' },
+      { id: '3', title: 'Review item', state: 'Code Review' },
+    ]);
+
+    expect(facade.backlogItems()).toEqual([
+      { id: '1', title: 'Backlog item', state: 'To Do' },
+    ]);
+  });
+
   it('reloads items after changing an item state', () => {
     facade.items.set([{ id: '1', title: 'Active item', state: 'In Progress' }]);
 
@@ -69,11 +83,29 @@ describe('BoardFacade', () => {
     expect(itemsService.getItems).toHaveBeenCalledTimes(2);
   });
 
+  it('requires a positive estimation before moving an item to In Progress', () => {
+    facade.items.set([{ id: '1', title: 'Unestimated item', state: 'Ready' }]);
+
+    facade.changeState('1', 'In Progress');
+
+    expect(itemsService.changeState).not.toHaveBeenCalled();
+    expect(facade.error()).toBe('Przed rozpoczęciem pracy dodaj estymację elementu.');
+  });
+
+  it('assigns a user to an item and reloads items', () => {
+    facade.items.set([{ id: '1', title: 'Item', state: 'Ready' }]);
+
+    facade.assignUser('1', 'user-2');
+
+    expect(itemsService.assignUser).toHaveBeenCalledWith('1', 'user-2');
+    expect(facade.items()).toEqual([{ id: '1', title: 'Item', state: 'Ready', assigneeId: 'user-2' }]);
+  });
+
   it('creates a To Do item for the selected team and reloads items', () => {
     facade.createItem({
       teamId: 'team-1',
       title: 'Prepare release',
-      type: 'Task',
+      type: 'Story',
       state: 'To Do',
       estimation: 3,
     }).subscribe();
@@ -81,7 +113,7 @@ describe('BoardFacade', () => {
     expect(itemsService.createItem).toHaveBeenCalledWith({
       teamId: 'team-1',
       title: 'Prepare release',
-      type: 'Task',
+      type: 'Story',
       state: 'To Do',
       estimation: 3,
     });

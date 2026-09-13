@@ -19,8 +19,23 @@ describe('Board', () => {
           useValue: { snapshot: { data: {}, paramMap: { get: () => 'team-1' } } },
         },
         { provide: Router, useValue: { navigate: () => Promise.resolve(true) } },
-        { provide: TeamsService, useValue: { getTeams: () => of([{ id: 'team-1', name: 'Team 1' }]) } },
-        { provide: ItemsService, useValue: { getItems: () => of([]) } },
+        {
+          provide: TeamsService,
+          useValue: {
+            getTeams: () => of([{ id: 'team-1', name: 'Team 1', members: [] }]),
+          },
+        },
+        {
+          provide: ItemsService,
+          useValue: {
+            getItems: () => of([{
+              id: 'item-1',
+              title: 'Assigned item',
+              state: 'Ready',
+              assignedUserId: 'user-1',
+            }]),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -31,5 +46,14 @@ describe('Board', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('keeps an assigned user selected when team members do not include the user', () => {
+    fixture.detectChanges();
+
+    const assigneeSelect = fixture.nativeElement.querySelector('.assignee-picker select') as HTMLSelectElement;
+
+    expect(assigneeSelect.value).toBe('user-1');
+    expect(assigneeSelect.options[1].textContent).toContain('user-1');
   });
 });

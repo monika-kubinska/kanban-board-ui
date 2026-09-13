@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, finalize, Observable, tap, throwError } from 'rxjs';
-import { CreateItemInput, Item, Team } from '../../api/data-contracts';
+import { CreateItemInput, Item, ItemState, Team, TeamMember } from '../../api/data-contracts';
 import { TeamsService } from '../teams/teams.service';
 import { ItemsService } from './items.service';
 
@@ -18,8 +18,14 @@ export class BoardFacade {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly updatingItemId = signal<string | null>(null);
+  readonly assigningItemId = signal<string | null>(null);
   readonly creatingItem = signal(false);
+  readonly backlogItems = computed(() => this.items().filter((item) => item.state === 'To Do'));
   readonly createItemError = signal('');
+  readonly teamMembers = computed<TeamMember[]>(() => {
+    const team = this.teams().find((candidate) => candidate.id === this.selectedTeamId());
+    return team?.members ?? [];
+  });
   readonly isBacklog = this.route.snapshot.data['view'] === 'backlog';
   readonly sprintColumns = computed(() => {
     const columns = new Map<string, Item[]>();
@@ -57,8 +63,14 @@ export class BoardFacade {
     }
   }
 
-  changeState(itemId: string, state: string): void {
+  changeState(itemId: string, state: ItemState): void {
     if (!state || this.updatingItemId()) {
+      return;
+    }
+
+    const item = this.items().find((candidate) => candidate.id === itemId);
+    if (state === 'In Progress' && (!item?.estimation || item.estimation <= 0)) {
+      this.error.set('Przed rozpoczęciem pracy dodaj estymację elementu.');
       return;
     }
 
@@ -68,6 +80,29 @@ export class BoardFacade {
     ).subscribe({
       next: () => this.loadItems(this.selectedTeamId()),
       error: () => this.error.set('Nie udało się zmienić stanu elementu.'),
+    });
+  }
+
+  assignUser(itemId: string, userId: string): void {
+    if (this.assigningItemId()) {
+      return;
+    }
+
+    const previousAssigneeId = this.items().find((item) => item.id === itemId)?.assigneeId;
+    const assigneeId = userId || undefined;
+    this.assigningItemId.set(itemId);
+    this.itemsService.assignUser(itemId, userId || null).pipe(
+      finalize(() => this.assigningItemId.set(null)),
+    ).subscribe({
+      next: () => this.items.update((items) => items.map((item) => (
+        item.id === itemId ? { ...item, assigneeId } : item
+      ))),
+      error: () => {
+        this.items.update((items) => items.map((item) => (
+          item.id === itemId ? { ...item, assigneeId: previousAssigneeId } : item
+        )));
+        this.error.set('Nie udało się przypisać użytkownika do elementu.');
+      },
     });
   }
 
@@ -116,7 +151,10 @@ export class BoardFacade {
     this.error.set('');
     this.itemsService.getItems(teamId).subscribe({
       next: (items) => {
-        this.items.set(items);
+        this.items.set(items.map((item) => ({
+          ...item,
+          assigneeId: item.assigneeId ?? item.assignedUserId,
+        })));
         this.loading.set(false);
       },
       error: () => {

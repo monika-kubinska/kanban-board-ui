@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CreateItemInput } from '../../api/data-contracts';
+import { Component, inject, signal } from '@angular/core';
+import { CreateItemInput, ItemState } from '../../api/data-contracts';
 import { BoardFacade } from './board.facade';
+import { CreateItemForm } from './create-item-form';
+import { WorkItemCard } from './work-item-card';
 
 @Component({
   selector: 'app-board',
-  imports: [FormsModule],
+  imports: [CreateItemForm, WorkItemCard],
   providers: [BoardFacade],
   templateUrl: './board.html',
   styleUrl: './board.css',
@@ -15,18 +16,17 @@ export class Board {
 
   readonly teams = this.facade.teams;
   readonly selectedTeamId = this.facade.selectedTeamId;
-  readonly items = this.facade.items;
   readonly loading = this.facade.loading;
   readonly error = this.facade.error;
   readonly updatingItemId = this.facade.updatingItemId;
+  readonly assigningItemId = this.facade.assigningItemId;
   readonly creatingItem = this.facade.creatingItem;
+  readonly backlogItems = this.facade.backlogItems;
   readonly createItemError = this.facade.createItemError;
   readonly isBacklog = this.facade.isBacklog;
   readonly sprintColumns = this.facade.sprintColumns;
-  itemTitle = '';
-  itemType = '';
-  itemEstimation: number | null = null;
-
+  readonly teamMembers = this.facade.teamMembers;
+  readonly createResetKey = signal(0);
   selectTeam(teamId: string): void {
     this.facade.selectTeam(teamId);
   }
@@ -39,33 +39,17 @@ export class Board {
     this.facade.openSprintBoard();
   }
 
-  changeState(itemId: string, state: string): void {
+  changeState(itemId: string, state: ItemState): void {
     this.facade.changeState(itemId, state);
   }
 
-  createItem(event: SubmitEvent): void {
-    event.preventDefault();
-    const title = this.itemTitle.trim();
-    const teamId = this.selectedTeamId();
+  assignUser(itemId: string, userId: string): void {
+    this.facade.assignUser(itemId, userId);
+  }
 
-    if (!title || !teamId || this.creatingItem()) {
-      return;
-    }
-
-    const item: CreateItemInput = {
-      teamId,
-      title,
-      type: this.itemType.trim() || undefined,
-      state: 'To Do',
-      estimation: this.itemEstimation ?? undefined,
-    };
-
+  createItem(item: CreateItemInput): void {
     this.facade.createItem(item).subscribe({
-      next: () => {
-        this.itemTitle = '';
-        this.itemType = '';
-        this.itemEstimation = null;
-      },
+      next: () => this.createResetKey.update((key) => key + 1),
       error: () => undefined,
     });
   }
