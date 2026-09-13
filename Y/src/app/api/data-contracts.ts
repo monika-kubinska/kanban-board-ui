@@ -12,6 +12,24 @@ export interface RegisterInput {
 export interface Team {
   id: string;
   name: string;
+  members?: TeamMember[];
+}
+
+export interface TeamMember {
+  id: string;
+  name?: string;
+  email?: string;
+}
+
+export interface CreateTeamInput {
+  name: string;
 }
 
 export type UserRole = 'admin' | 'teamMember' | string;
+
+export interface User {
+  id: string;
+  name?: string;
+  email?: string;
+  role?: UserRole;
+}

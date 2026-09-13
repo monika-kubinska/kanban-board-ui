@@ -42,12 +42,14 @@ export class AuthService {
       .post<LoginResponse>(`${apiURL}/auth/login`, credentials)
       .pipe(
         tap((response) => {
-          this.setToken(response.token ?? response.accessToken ?? null);
+          const token = response.token ?? response.accessToken ?? null;
+          this.setToken(token);
           this.setUserName(
             response.name ??
               response.username ??
               response.user?.name ??
               response.user?.username ??
+              (token ? this.readNameFromToken(token) : null) ??
               'Użytkownik',
           );
               this.setUserEmail(response.email ?? response.user?.email ?? credentials.email);
@@ -172,6 +174,23 @@ export class AuthService {
         ? roleClaim
         : typeof schemaRole === 'string'
           ? schemaRole
+          : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private readNameFromToken(token: string): string | null {
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as JwtPayload;
+      const nameClaim = decodedPayload['name'] ?? decodedPayload['given_name'] ?? decodedPayload['preferred_username'];
+      const schemaName = Object.entries(decodedPayload).find(([claim]) => claim.endsWith('/name'))?.[1];
+
+      return typeof nameClaim === 'string'
+        ? nameClaim
+        : typeof schemaName === 'string'
+          ? schemaName
           : null;
     } catch {
       return null;

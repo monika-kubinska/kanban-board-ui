@@ -5,6 +5,7 @@ import { Board } from './pages/board/board';
 import { Account } from './pages/account/account';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
+import { Teams } from './pages/teams/teams';
 
 const authenticatedGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -30,6 +31,11 @@ export const routes: Routes = [
   {
     path: 'account',
     component: Account,
+    canActivate: [authenticatedGuard],
+  },
+  {
+    path: 'teams',
+    component: Teams,
     canActivate: [authenticatedGuard],
   },
   {

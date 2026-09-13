@@ -12,6 +12,29 @@
 		</div>
 	</div>
 
+	<section class="create-team-section" aria-labelledby="create-team-title">
+		<h2 id="create-team-title">Utwórz zespół</h2>
+		<form class="create-team-form" (submit)="createTeam($event)">
+			<label for="team-name">Nazwa zespołu</label>
+			<div class="form-row">
+				<input
+					id="team-name"
+					name="teamName"
+					type="text"
+					[(ngModel)]="newTeamName"
+					required
+					maxlength="100"
+				/>
+				<button type="submit" [disabled]="creatingTeam() || !newTeamName.trim()">
+					{{ creatingTeam() ? 'Tworzenie...' : 'Utwórz' }}
+				</button>
+			</div>
+		</form>
+		@if (createTeamError()) {
+			<p class="message error">{{ createTeamError() }}</p>
+		}
+	</section>
+
 	<section class="teams-section" aria-labelledby="teams-title">
 		<div class="section-heading">
 			<h2 id="teams-title">Moje zespoły</h2>
