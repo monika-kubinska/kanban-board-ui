@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, finalize, Observable, tap, throwError } from 'rxjs';
-import { CreateItemInput, Item, ItemState, Team, TeamMember } from '../../api/data-contracts';
+import { CreateItemInput, Item, ItemState, Team, TeamMember, UpdateItemInput } from '../../api/data-contracts';
 import { TeamsService } from '../teams/teams.service';
 import { ItemsService } from './items.service';
 
@@ -69,8 +69,9 @@ export class BoardFacade {
     }
 
     const item = this.items().find((candidate) => candidate.id === itemId);
-    if (state === 'In Progress' && (!item?.estimation || item.estimation <= 0)) {
-      this.error.set('Przed rozpoczęciem pracy dodaj estymację elementu.');
+    if (item?.state === 'To Do' && state !== 'To Do' &&
+      (item.estimation === undefined || item.estimation === null || !item.estimationUnit)) {
+      this.error.set('Przed opuszczeniem To Do dodaj estymację i jednostkę.');
       return;
     }
 
@@ -103,6 +104,35 @@ export class BoardFacade {
         )));
         this.error.set('Nie udało się przypisać użytkownika do elementu.');
       },
+    });
+  }
+
+  updateItem(itemId: string, changes: Pick<UpdateItemInput, 'estimation' | 'estimationUnit'>): void {
+    if (this.updatingItemId()) {
+      return;
+    }
+
+    const item = this.items().find((candidate) => candidate.id === itemId);
+    if (!item) {
+      return;
+    }
+
+    this.updatingItemId.set(itemId);
+    this.itemsService.updateItem(itemId, {
+      team: this.selectedTeamId(),
+      title: item.title,
+      type: item.type,
+      state: item.state,
+      ...changes,
+    }).pipe(
+      finalize(() => this.updatingItemId.set(null)),
+    ).subscribe({
+      next: (updatedItem) => this.items.update((items) => items.map((current) => (
+        current.id === itemId
+          ? { ...current, ...updatedItem, assigneeId: updatedItem.assigneeId ?? updatedItem.assignedUserId }
+          : current
+      ))),
+      error: () => this.error.set('Nie udało się zapisać estymacji elementu.'),
     });
   }
 

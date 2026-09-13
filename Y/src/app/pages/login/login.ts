@@ -5,6 +5,7 @@ import { email, form, FormField, required } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { LoginInput } from '../../api/data-contracts';
 import { AuthService } from '../../core/auth/auth.service';
+import { TranslationService } from '../../core/i18n/translation.service';
 import { Register } from '../register/register';
 
 @Component({
@@ -16,6 +17,8 @@ import { Register } from '../register/register';
 export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
 
   loading = false;
   showRegisterForm = false;
@@ -23,7 +26,7 @@ export class Login {
 
   readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
   readonly authStatusMessage = computed(() =>
-    this.isAuthenticated() ? 'Jesteś zalogowany' : 'Nie jesteś zalogowany'
+    this.isAuthenticated() ? this.t('loginStatus') : this.t('logoutStatus')
   );
 
   loginModel = signal<LoginInput>({

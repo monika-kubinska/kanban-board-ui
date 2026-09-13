@@ -1,19 +1,19 @@
 <section class="profile-page" aria-labelledby="profile-title">
 	<div class="profile-heading">
 		<div>
-			<p class="eyebrow">Profil użytkownika</p>
-			<h1 id="profile-title">{{ userName() || 'Użytkownik' }}</h1>
+			<p class="eyebrow">{{ t('profile') }}</p>
+			<h1 id="profile-title">{{ userName() || t('user') }}</h1>
 			@if (userEmail()) {
 				<p class="email">{{ userEmail() }}</p>
 			}
 			@if (userRole()) {
-				<p class="role">Rola: {{ userRole() }}</p>
+				<p class="role">{{ t('role') }}: {{ userRole() }}</p>
 			}
 		</div>
 	</div>
 
 	<section class="create-team-section" aria-labelledby="create-team-title">
-		<h2 id="create-team-title">Utwórz zespół</h2>
+		<h2 id="create-team-title">{{ t('createTeam') }}</h2>
 		<app-create-team-form
 			[loading]="creatingTeam()"
 			[error]="createTeamError()"
@@ -23,16 +23,16 @@
 
 	<section class="teams-section" aria-labelledby="teams-title">
 		<div class="section-heading">
-			<h2 id="teams-title">Moje zespoły</h2>
+			<h2 id="teams-title">{{ t('myTeams') }}</h2>
 			<span>{{ teams().length }}</span>
 		</div>
 
 		@if (loading()) {
-			<p class="message">Ładowanie zespołów...</p>
+			<p class="message">{{ t('loadingTeams') }}</p>
 		} @else if (error()) {
 			<p class="message error">{{ error() }}</p>
 		} @else if (teams().length === 0) {
-			<p class="message">Nie należysz jeszcze do żadnego zespołu.</p>
+			<p class="message">{{ t('noTeams') }}</p>
 		} @else {
 			<ul class="team-list">
 				@for (team of teams(); track team.id) {

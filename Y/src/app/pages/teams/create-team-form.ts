@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslationService } from '../../core/i18n/translation.service';
 
 @Component({
   selector: 'app-create-team-form',
@@ -8,6 +9,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './create-team-form.css',
 })
 export class CreateTeamForm {
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
   readonly loading = input(false);
   readonly error = input('');
   readonly create = output<string>();

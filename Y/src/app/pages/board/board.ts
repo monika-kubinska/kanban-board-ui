@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
-import { CreateItemInput, ItemState } from '../../api/data-contracts';
+import { CreateItemInput, EstimationUnit, ItemState } from '../../api/data-contracts';
+import { TranslationService } from '../../core/i18n/translation.service';
 import { BoardFacade } from './board.facade';
 import { CreateItemForm } from './create-item-form';
 import { WorkItemCard } from './work-item-card';
@@ -13,6 +14,8 @@ import { WorkItemCard } from './work-item-card';
 })
 export class Board {
   private readonly facade = inject(BoardFacade);
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
 
   readonly teams = this.facade.teams;
   readonly selectedTeamId = this.facade.selectedTeamId;
@@ -45,6 +48,10 @@ export class Board {
 
   assignUser(itemId: string, userId: string): void {
     this.facade.assignUser(itemId, userId);
+  }
+
+  updateEstimation(itemId: string, estimation: number | undefined, estimationUnit: EstimationUnit | undefined): void {
+    this.facade.updateItem(itemId, { estimation, estimationUnit });
   }
 
   createItem(item: CreateItemInput): void {

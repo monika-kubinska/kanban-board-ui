@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { apiURL } from '../../api/config';
-import { CreateItemInput, Item, ItemState } from '../../api/data-contracts';
+import { CreateItemInput, Item, ItemState, UpdateItemInput } from '../../api/data-contracts';
 
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
@@ -27,6 +27,10 @@ export class ItemsService {
     return this.http
       .post(`${apiURL}/items/${itemId}/state`, { state }, { responseType: 'text' })
       .pipe(map(() => undefined));
+  }
+
+  updateItem(itemId: string, item: UpdateItemInput): Observable<Item> {
+    return this.http.put<Item>(`${apiURL}/items/${itemId}`, item);
   }
 
   assignUser(itemId: string, userId: string | null): Observable<void> {

@@ -2,12 +2,12 @@
 	<header class="board-heading">
 		<div>
 			<p class="eyebrow">Workspace</p>
-			<h1 id="board-title">{{ isBacklog ? 'Product backlog' : 'Sprint board' }}</h1>
+			<h1 id="board-title">{{ isBacklog ? t('backlog') : t('sprintBoard') }}</h1>
 		</div>
 
 		@if (teams().length > 0) {
 			<label class="team-picker">
-				<span>Zespół</span>
+				<span>{{ t('team') }}</span>
 				<select [value]="selectedTeamId()" (change)="selectTeam($any($event.target).value)">
 					@for (team of teams(); track team.id) {
 						<option [value]="team.id">{{ team.name }}</option>
@@ -17,7 +17,7 @@
 		}
 	</header>
 
-	<nav class="view-switcher" aria-label="Widok pracy">
+	<nav class="view-switcher" [attr.aria-label]="t('workView')">
 		<button type="button" [class.active]="isBacklog" (click)="openBacklog()">Backlog</button>
 		<button type="button" [class.active]="!isBacklog" (click)="openSprintBoard()">Sprint board</button>
 	</nav>
@@ -33,13 +33,13 @@
 	}
 
 	@if (loading()) {
-		<p class="status" role="status">Ładowanie tablicy...</p>
+		<p class="status" role="status">{{ t('boardLoading') }}</p>
 	} @else if (error()) {
 		<p class="status status-error" role="alert">{{ error() }}</p>
 	} @else if (teams().length === 0) {
-		<p class="status">Nie należysz jeszcze do żadnego zespołu.</p>
+		<p class="status">{{ t('noTeams') }}</p>
 	} @else if (isBacklog) {
-		<section class="backlog-list" aria-label="Elementy backlogu">
+		<section class="backlog-list" [attr.aria-label]="t('backlogItems')">
 			@for (item of backlogItems(); track item.id) {
 				<app-work-item-card
 					[item]="item"
@@ -49,9 +49,10 @@
 					[assigning]="assigningItemId() === item.id"
 					(stateChange)="changeState(item.id, $event)"
 					(assigneeChange)="assignUser(item.id, $event)"
+					(estimationChange)="updateEstimation(item.id, $any($event).estimation, $any($event).estimationUnit)"
 				/>
 			} @empty {
-				<p class="status">Backlog jest pusty.</p>
+				  <p class="status">{{ t('backlogEmpty') }}</p>
 			}
 		</section>
 	} @else if (sprintColumns().length) {
@@ -68,6 +69,7 @@
 								[assigning]="assigningItemId() === item.id"
 								(stateChange)="changeState(item.id, $event)"
 								(assigneeChange)="assignUser(item.id, $event)"
+								(estimationChange)="updateEstimation(item.id, $any($event).estimation, $any($event).estimationUnit)"
 							/>
 						}
 					</div>
@@ -75,6 +77,6 @@
 			}
 		</section>
 	} @else {
-		<p class="status">Brak elementów na sprint boardzie.</p>
+		<p class="status">{{ t('noSprintItems') }}</p>
 	}
 </main>

@@ -1,6 +1,7 @@
-import { Component, effect, input, output } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateItemInput, EstimationUnit, ItemType } from '../../api/data-contracts';
+import { TranslationService } from '../../core/i18n/translation.service';
 
 @Component({
   selector: 'app-create-item-form',
@@ -9,6 +10,8 @@ import { CreateItemInput, EstimationUnit, ItemType } from '../../api/data-contra
   styleUrl: './create-item-form.css',
 })
 export class CreateItemForm {
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
   readonly teamId = input.required<string>();
   readonly loading = input(false);
   readonly error = input('');

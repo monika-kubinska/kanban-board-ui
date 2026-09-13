@@ -1,5 +1,5 @@
 <form (submit)="submit($event)">
-  <label for="team-name">Nazwa zespołu</label>
+  <label for="team-name">{{ t('teams') }}</label>
   <div class="form-row">
     <input
       id="team-name"
@@ -10,7 +10,7 @@
       required
     />
     <button type="submit" [disabled]="loading() || !teamName.trim()">
-      {{ loading() ? 'Tworzenie...' : 'Utwórz zespół' }}
+      {{ loading() ? t('creating') : t('createTeam') }}
     </button>
   </div>
 </form>

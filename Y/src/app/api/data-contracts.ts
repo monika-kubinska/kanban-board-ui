@@ -57,3 +57,12 @@ export interface CreateItemInput {
   estimation?: number;
   estimationUnit?: EstimationUnit;
 }
+
+export interface UpdateItemInput {
+  team: string;
+  title: string;
+  type?: ItemType;
+  state: ItemState;
+  estimation?: number;
+  estimationUnit?: EstimationUnit;
+}

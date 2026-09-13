@@ -1,7 +1,7 @@
 <form (submit)="register($event)">
   <div>
     <label>
-      E-mail
+      {{ t('email') }}
       <input type="email" [formField]="registerForm.email" />
     </label>
     @if (registerForm.email().invalid() && registerForm.email().touched()) {
@@ -15,7 +15,7 @@
 
   <div>
     <label>
-      Hasło
+      {{ t('password') }}
       <input type="password" [formField]="registerForm.password" />
     </label>
     @if (registerForm.password().invalid() && registerForm.password().touched()) {
@@ -29,7 +29,7 @@
 
   <div>
     <label>
-      Imię
+      {{ t('name') }}
       <input type="text" [formField]="registerForm.name" />
     </label>
     @if (registerForm.name().invalid() && registerForm.name().touched()) {
@@ -41,12 +41,12 @@
     }
   </div>
 
-  <button type="submit" [disabled]="loading">Zarejestruj się</button>
+  <button type="submit" [disabled]="loading">{{ t('register') }}</button>
 </form>
 
 @if (isFormValid()) {
   <div class="valid">
-    <span>✓ Formularz jest poprawny</span>
+    <span>✓ {{ t('formValid') }}</span>
   </div>
 }
 

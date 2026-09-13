@@ -1,30 +1,30 @@
 <form class="create-item-form" (submit)="submit($event)">
   <div>
-    <label for="item-title">Nowy item</label>
+    <label for="item-title">{{ t('createItemTitle') }}</label>
     <input id="item-title" name="itemTitle" type="text" [(ngModel)]="itemTitle" maxlength="200" required />
   </div>
   <div>
-    <label for="item-type">Typ</label>
+    <label for="item-type">{{ t('item') }}</label>
     <select id="item-type" name="itemType" [(ngModel)]="itemType" required>
-      <option value="" disabled>Wybierz typ</option>
+      <option value="" disabled>{{ t('chooseType') }}</option>
       @for (type of itemTypes; track type) {
         <option [value]="type">{{ type }}</option>
       }
     </select>
   </div>
   <div>
-    <label for="item-estimation">Estymacja</label>
+    <label for="item-estimation">{{ t('estimation') }}</label>
     <input id="item-estimation" name="itemEstimation" type="number" min="0" [(ngModel)]="itemEstimation" />
   </div>
   <div>
-    <label for="item-estimation-unit">Jednostka</label>
+    <label for="item-estimation-unit">{{ t('language') }}</label>
     <select id="item-estimation-unit" name="itemEstimationUnit" [(ngModel)]="itemEstimationUnit">
-      <option value="hours">Godziny</option>
-      <option value="points">Punkty</option>
+      <option value="hours">{{ t('hours') }}</option>
+      <option value="points">{{ t('points') }}</option>
     </select>
   </div>
   <button type="submit" [disabled]="loading() || !itemTitle.trim() || !itemType">
-    {{ loading() ? 'Tworzenie...' : 'Utwórz item' }}
+    {{ loading() ? t('creating') : t('createItem') }}
   </button>
 </form>
 @if (error()) {

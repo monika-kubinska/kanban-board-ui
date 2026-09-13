@@ -1,15 +1,38 @@
 <article class="work-card">
   <h2>{{ item().title }}</h2>
   <p>
-    {{ item().type || 'Item' }}
+    {{ item().type || t('item') }}
     @if (showState()) {
       · {{ item().state }}
     } @else if (item().estimation) {
       · {{ item().estimation }} {{ estimationUnitLabel[item().estimationUnit || 'hours'] }}
     }
   </p>
+  @if (editingEstimation) {
+    <form class="estimation-form" (submit)="saveEstimation($event)">
+      <label>
+        <span>{{ t('estimation') }}</span>
+        <input name="estimation" type="number" min="0" step="0.5" [(ngModel)]="estimationDraft" />
+      </label>
+      <label>
+        <span>{{ t('language') }}</span>
+        <select name="estimationUnit" [(ngModel)]="estimationUnitDraft">
+          <option value="hours">{{ t('hours') }}</option>
+          <option value="points">{{ t('points') }}</option>
+        </select>
+      </label>
+      <div class="estimation-actions">
+        <button type="submit">{{ t('save') }}</button>
+        <button type="button" (click)="cancelEstimationEdit()">{{ t('cancel') }}</button>
+      </div>
+    </form>
+  } @else {
+    <button type="button" class="edit-estimation" (click)="startEstimationEdit()" [disabled]="updating()">
+      {{ item().estimation === undefined ? t('addEstimation') : t('editEstimation') }}
+    </button>
+  }
   <label class="state-picker">
-    <span>Stan</span>
+    <span>{{ t('state') }}</span>
     <select [value]="item().state" (change)="changeState($event)" [disabled]="updating()">
       @for (state of states; track state) {
         <option [value]="state">{{ state }}</option>
@@ -17,9 +40,9 @@
     </select>
   </label>
   <label class="assignee-picker">
-    <span>Przypisany użytkownik</span>
+    <span>{{ t('assignedUser') }}</span>
     <select [value]="item().assigneeId || ''" (change)="assignUser($event)" [disabled]="assigning()">
-      <option value="" [selected]="!item().assigneeId">Nieprzypisany</option>
+      <option value="" [selected]="!item().assigneeId">{{ t('noAssignee') }}</option>
       @for (member of assigneeOptions(); track member.userId) {
         <option [value]="member.userId" [selected]="member.userId === item().assigneeId">
           {{ member.name || member.email || member.userId }}

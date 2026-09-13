@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../../core/auth/auth.service';
+import { TranslationService } from '../../core/i18n/translation.service';
 import { Team } from '../../api/data-contracts';
 import { CreateTeamForm } from '../teams/create-team-form';
 import { TeamsService } from '../teams/teams.service';
@@ -13,6 +14,8 @@ import { TeamsService } from '../teams/teams.service';
 export class Account {
   private readonly authService = inject(AuthService);
   private readonly teamsService = inject(TeamsService);
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
 
   readonly userName = this.authService.userName;
   readonly userEmail = this.authService.userEmail;

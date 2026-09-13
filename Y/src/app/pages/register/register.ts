@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { RegisterInput } from '../../api/data-contracts';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/auth/auth.service';
+import { TranslationService } from '../../core/i18n/translation.service';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,8 @@ import { AuthService } from '../../core/auth/auth.service';
 export class Register {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
 
   @Output() registerSuccess = new EventEmitter<void>();
   loading = false;

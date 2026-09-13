@@ -1,19 +1,26 @@
 <header class="site-header">
   <a class="brand" routerLink="/">Kanban Board</a>
 
-  <nav class="account-nav" aria-label="Konto">
+  <nav class="account-nav" [attr.aria-label]="t('account')">
     @if (isAuthenticated()) {
-      <a routerLink="/teams">Zespoły</a>
+      <a routerLink="/teams">{{ t('teams') }}</a>
       <a class="user-name" routerLink="/account">
-        {{ userName() || 'Użytkownik' }}
+        {{ userName() || t('user') }}
         @if (userEmail()) {
           <small>{{ userEmail() }}</small>
         }
       </a>
-      <button type="button" (click)="logout()">Wyloguj</button>
+      <button type="button" (click)="logout()">{{ t('logout') }}</button>
     } @else {
-      <a routerLink="/login">Zaloguj</a>
-      <a routerLink="/register">Zarejestruj</a>
+      <a routerLink="/login">{{ t('login') }}</a>
+      <a routerLink="/register">{{ t('register') }}</a>
     }
+    <label class="language-picker">
+      <span>{{ t('language') }}</span>
+      <select [value]="language()" (change)="setLanguage($event)" [attr.aria-label]="t('language')">
+        <option value="pl">{{ t('languagePolish') }}</option>
+        <option value="en">{{ t('languageEnglish') }}</option>
+      </select>
+    </label>
   </nav>
 </header>

@@ -4,14 +4,14 @@
 
 @if (isAuthenticated()) {
   <div class="valid">
-    <span>Masz aktywną sesję. Możesz korzystać z aplikacji.</span>
+    <span>{{ t('sessionActive') }}</span>
   </div>
 } @else {
   @if (!showRegisterForm) {
     <form (submit)="login($event)">
       <div>
         <label>
-          E-mail
+            {{ t('email') }}
           <input type="email" [formField]="loginForm.email" />
         </label>
         @if (loginForm.email().invalid() && loginForm.email().touched()) {
@@ -25,7 +25,7 @@
 
       <div>
         <label>
-          Hasło
+            {{ t('password') }}
           <input type="password" [formField]="loginForm.password" />
         </label>
         @if (loginForm.password().invalid() && loginForm.password().touched()) {
@@ -37,19 +37,19 @@
         }
       </div>
 
-      <button type="submit" [disabled]="loginForm().invalid() || loading">Zaloguj się</button>
+        <button type="submit" [disabled]="loginForm().invalid() || loading">{{ t('loginSubmit') }}</button>
     </form>
 
     <div>
       <label>
-        Nie masz konta? Zarejestruj się
-        <button type="button" (click)="onRegisterClick()">Rejestracja</button>
+          {{ t('registerPrompt') }}
+          <button type="button" (click)="onRegisterClick()">{{ t('registration') }}</button>
       </label>
     </div>
 
     @if (isFormValid()) {
       <div class="valid">
-        <span>✓ Formularz jest poprawny</span>
+          <span>✓ {{ t('formValid') }}</span>
       </div>
     }
 

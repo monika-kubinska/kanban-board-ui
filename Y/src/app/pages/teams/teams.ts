@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { TranslationService } from '../../core/i18n/translation.service';
 import { CreateTeamForm } from './create-team-form';
 import { TeamList } from './team-list';
 import { TeamsFacade } from './teams.facade';
@@ -11,6 +12,8 @@ import { TeamsFacade } from './teams.facade';
   styleUrl: './teams.css',
 })
 export class Teams {
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
   private readonly facade = inject(TeamsFacade);
 
   readonly teams = this.facade.teams;

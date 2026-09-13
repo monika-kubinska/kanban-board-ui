@@ -1,6 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Team, User } from '../../api/data-contracts';
+import { TranslationService } from '../../core/i18n/translation.service';
 
 @Component({
   selector: 'app-team-list',
@@ -9,6 +10,8 @@ import { Team, User } from '../../api/data-contracts';
   styleUrl: './team-list.css',
 })
 export class TeamList {
+  private readonly translationService = inject(TranslationService);
+  readonly t = (key: Parameters<TranslationService['translate']>[0]): string => this.translationService.translate(key);
   readonly teams = input<Team[]>([]);
   readonly users = input<User[]>([]);
   readonly canManageMembers = input(false);

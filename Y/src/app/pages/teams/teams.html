@@ -1,17 +1,17 @@
 <section class="teams-page" aria-labelledby="teams-title">
   <div class="page-heading">
     <div>
-      <p class="eyebrow">Workspace</p>
-      <h1 id="teams-title">Zespoły</h1>
-      <p class="intro">Zarządzaj zespołami, do których należysz.</p>
+      <p class="eyebrow">{{ t('teams') }}</p>
+      <h1 id="teams-title">{{ t('teams') }}</h1>
+      <p class="intro">{{ t('teamsIntro') }}</p>
     </div>
     <span class="team-count">{{ teams().length }}</span>
   </div>
 
   <section class="create-panel" aria-labelledby="create-team-title">
     <div>
-      <h2 id="create-team-title">Utwórz zespół</h2>
-      <p>Stwórz przestrzeń do współpracy nad projektem.</p>
+      <h2 id="create-team-title">{{ t('createTeam') }}</h2>
+      <p>{{ t('teamIntro') }}</p>
     </div>
     <app-create-team-form
       [loading]="creating()"
