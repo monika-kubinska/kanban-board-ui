@@ -121,7 +121,7 @@ export class Teams {
   }
 
   isMember(team: Team, userId: string): boolean {
-    return team.members?.some((member) => member.id === userId) ?? false;
+    return team.members?.some((member) => member.userId === userId) ?? false;
   }
 
   private loadTeams(): void {

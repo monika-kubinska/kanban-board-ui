@@ -91,7 +91,7 @@
                   <p class="message">Brak członków w tym zespole.</p>
                 } @else {
                   <ul class="member-list">
-                    @for (member of team.members; track member.id) {
+                    @for (member of team.members; track member.userId) {
                       <li>
                         <div>
                           <strong>{{ member.name || 'Użytkownik' }}</strong>
@@ -103,10 +103,10 @@
                           <button
                             class="remove-button"
                             type="button"
-                            [disabled]="removingMember() === member.id"
-                            (click)="removeMember(team.id, member.id)"
+                            [disabled]="removingMember() === member.userId"
+                            (click)="removeMember(team.id, member.userId)"
                           >
-                            {{ removingMember() === member.id ? 'Usuwanie...' : 'Usuń' }}
+                            {{ removingMember() === member.userId ? 'Usuwanie...' : 'Usuń' }}
                           </button>
                         }
                       </li>
