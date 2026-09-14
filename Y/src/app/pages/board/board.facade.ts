@@ -69,19 +69,17 @@ export class BoardFacade {
     }
 
     const item = this.items().find((candidate) => candidate.id === itemId);
+    if (!item || item.state === state) {
+      return;
+    }
+
     if (item?.state === 'To Do' && state !== 'To Do' &&
       (item.estimation === undefined || item.estimation === null || !item.estimationUnit)) {
       this.error.set('Przed opuszczeniem To Do dodaj estymację i jednostkę.');
       return;
     }
 
-    this.updatingItemId.set(itemId);
-    this.itemsService.changeState(itemId, state).pipe(
-      finalize(() => this.updatingItemId.set(null)),
-    ).subscribe({
-      next: () => this.loadItems(this.selectedTeamId()),
-      error: () => this.error.set('Nie udało się zmienić stanu elementu.'),
-    });
+    this.updateItem(itemId, { state });
   }
 
   assignUser(itemId: string, userId: string): void {
@@ -107,7 +105,7 @@ export class BoardFacade {
     });
   }
 
-  updateItem(itemId: string, changes: Pick<UpdateItemInput, 'estimation' | 'estimationUnit'>): void {
+  updateItem(itemId: string, changes: Partial<Pick<UpdateItemInput, 'state' | 'estimation' | 'estimationUnit'>>): void {
     if (this.updatingItemId()) {
       return;
     }
@@ -117,12 +115,16 @@ export class BoardFacade {
       return;
     }
 
+    const nextState = changes.state ?? item.state;
+    this.error.set('');
     this.updatingItemId.set(itemId);
     this.itemsService.updateItem(itemId, {
       team: this.selectedTeamId(),
       title: item.title,
       type: item.type,
-      state: item.state,
+      state: nextState,
+      estimation: item.estimation,
+      estimationUnit: item.estimationUnit,
       ...changes,
     }).pipe(
       finalize(() => this.updatingItemId.set(null)),
@@ -132,7 +134,7 @@ export class BoardFacade {
           ? { ...current, ...updatedItem, assigneeId: updatedItem.assigneeId ?? updatedItem.assignedUserId }
           : current
       ))),
-      error: () => this.error.set('Nie udało się zapisać estymacji elementu.'),
+      error: () => this.error.set('Nie udało się zapisać zmian elementu.'),
     });
   }
 

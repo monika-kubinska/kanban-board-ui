@@ -23,12 +23,6 @@ export class ItemsService {
       .pipe(map(() => undefined));
   }
 
-  changeState(itemId: string, state: ItemState): Observable<void> {
-    return this.http
-      .post(`${apiURL}/items/${itemId}/state`, { state }, { responseType: 'text' })
-      .pipe(map(() => undefined));
-  }
-
   updateItem(itemId: string, item: UpdateItemInput): Observable<Item> {
     return this.http.put<Item>(`${apiURL}/items/${itemId}`, item);
   }

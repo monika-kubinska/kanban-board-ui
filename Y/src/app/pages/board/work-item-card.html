@@ -4,7 +4,7 @@
     {{ item().type || t('item') }}
     @if (showState()) {
       · {{ item().state }}
-    } @else if (item().estimation) {
+    } @else if (item().estimation !== undefined) {
       · {{ item().estimation }} {{ estimationUnitLabel[item().estimationUnit || 'hours'] }}
     }
   </p>
@@ -15,7 +15,7 @@
         <input name="estimation" type="number" min="0" step="0.5" [(ngModel)]="estimationDraft" />
       </label>
       <label>
-        <span>{{ t('language') }}</span>
+        <span>{{ t('unit') }}</span>
         <select name="estimationUnit" [(ngModel)]="estimationUnitDraft">
           <option value="hours">{{ t('hours') }}</option>
           <option value="points">{{ t('points') }}</option>

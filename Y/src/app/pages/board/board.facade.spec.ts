@@ -10,7 +10,6 @@ describe('BoardFacade', () => {
   let facade: BoardFacade;
   let itemsService: {
     getItems: ReturnType<typeof vi.fn>;
-    changeState: ReturnType<typeof vi.fn>;
     assignUser: ReturnType<typeof vi.fn>;
     updateItem: ReturnType<typeof vi.fn>;
     createItem: ReturnType<typeof vi.fn>;
@@ -19,9 +18,8 @@ describe('BoardFacade', () => {
   beforeEach(() => {
     itemsService = {
       getItems: vi.fn(() => of([])),
-      changeState: vi.fn(() => of(undefined)),
       assignUser: vi.fn(() => of(undefined)),
-      updateItem: vi.fn(() => of({ id: '1', title: 'Item', state: 'Ready' })),
+      updateItem: vi.fn((_itemId, item) => of({ id: '1', title: item.title, state: item.state, ...item })),
       createItem: vi.fn(() => of(undefined)),
     };
 
@@ -76,20 +74,25 @@ describe('BoardFacade', () => {
     ]);
   });
 
-  it('reloads items after changing an item state', () => {
+  it('updates an item state without reloading or navigating', () => {
     facade.items.set([{ id: '1', title: 'Active item', state: 'In Progress' }]);
 
     facade.changeState('1', 'Done');
 
-    expect(itemsService.changeState).toHaveBeenCalledWith('1', 'Done');
-    expect(itemsService.getItems).toHaveBeenCalledTimes(2);
+    expect(itemsService.updateItem).toHaveBeenCalledWith('1', {
+      team: 'team-1',
+      title: 'Active item',
+      state: 'Done',
+    });
+    expect(itemsService.getItems).toHaveBeenCalledTimes(1);
+    expect(facade.items()[0].state).toBe('Done');
   });
 
   it('requires estimation and unit before moving an item out of To Do', () => {
     facade.items.set([{ id: '1', title: 'Unestimated item', state: 'To Do' }]);
     facade.changeState('1', 'Ready');
 
-    expect(itemsService.changeState).not.toHaveBeenCalled();
+    expect(itemsService.updateItem).not.toHaveBeenCalled();
     expect(facade.error()).toBe('Przed opuszczeniem To Do dodaj estymację i jednostkę.');
   });
 
@@ -98,7 +101,7 @@ describe('BoardFacade', () => {
 
     facade.changeState('1', 'In Progress');
 
-    expect(itemsService.changeState).not.toHaveBeenCalled();
+    expect(itemsService.updateItem).not.toHaveBeenCalled();
     expect(facade.error()).toBe('Przed opuszczeniem To Do dodaj estymację i jednostkę.');
   });
 
@@ -113,7 +116,13 @@ describe('BoardFacade', () => {
 
     facade.changeState('1', 'Ready');
 
-    expect(itemsService.changeState).toHaveBeenCalledWith('1', 'Ready');
+    expect(itemsService.updateItem).toHaveBeenCalledWith('1', {
+      team: 'team-1',
+      title: 'Estimated item',
+      state: 'Ready',
+      estimation: 5,
+      estimationUnit: 'points',
+    });
   });
 
   it('assigns a user to an item and reloads items', () => {

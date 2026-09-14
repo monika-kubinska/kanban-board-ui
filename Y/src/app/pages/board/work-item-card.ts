@@ -51,7 +51,6 @@ export class WorkItemCard {
   changeState(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.stateChange.emit(select.value as ItemState);
-    select.value = this.item().state;
   }
 
   assignUser(event: Event): void {
